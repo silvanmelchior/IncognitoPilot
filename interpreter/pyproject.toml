@@ -1,17 +1,15 @@
 [tool.poetry]
-name = "local-code-interpreter"
+name = "interpreter"
 version = "0.1.0"
 description = ""
 authors = ["Silvan Melchior"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "local_code_interpreter"}]
+# packages = [{include = "interpreter"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
 fastapi = "^0.100.0"
-openai = "^0.27.8"
-confz = "^2.0.0"
 uvicorn = "^0.23.0"
 
 
