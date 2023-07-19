@@ -66,6 +66,7 @@ export default function Session() {
   }
 
   const executeCodeDone = (history: Message[]) => (result: CodeResult) => {
+    setAskApproveOut(false)
     const newMessage: Message = { role: "interpreter", code_result: result }
     const newHistory = [...history, newMessage]
     setHistory(newHistory)

@@ -27,8 +27,9 @@ class RunResponse(BaseModel):
 @app.post("/run")
 def run(req: RunRequest) -> RunResponse:
     process = subprocess.run(
-        ["python", "-c", req.code],
+        ["C:/Users/sime/AppData/Local/pypoetry/Cache/virtualenvs/interpreter-R0GDqdSm-py3.11/Scripts/python", "-c", req.code],  # TODO
         capture_output=True,
-        text=True
+        text=True,
+        cwd="C:/Users/sime/Desktop/code_interpreter"  # TODO
     )
     return RunResponse(stdout=process.stdout, stderr=process.stderr)

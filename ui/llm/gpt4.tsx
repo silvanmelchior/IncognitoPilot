@@ -8,11 +8,18 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 const MODEL = "gpt-4-0613"
-const SYSTEM_MESSAGE = "You are a helpful assistant."
+const SYSTEM_MESSAGE = "You are a helpful coding assistant."
 const FUNCTIONS = [
     {
         "name": "run_python_code",
-        "description": "Runs arbitrary Python code as script, returns stdout and stderr.",
+        "description":
+          "Runs arbitrary Python code and returns stdout and stderr. " +
+          "The code is executed as a script, so print statements should be used, if any output is of interest. " +
+          "The environment has internet and file system access. " +
+          "The code does not have access to the variables or imports from the previous execution, only the file system is persistent. " +
+          "The current working directory is shared with the user, so files can be exchanged. " +
+          "There are many libraries pre-installed, including numpy, pandas, matplotlib, and scikit-learn. " +
+          "You cannot show plots, but you can store them in the working directory and point the user to them.",
         "parameters": {
             "type": "object",
             "properties": {
