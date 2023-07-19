@@ -41,7 +41,7 @@ export default function Session() {
     if(message.code !== undefined) {
       setCode(message.code)
       if(autoApproveIn) {
-        executeCode(history)(message.code)
+        executeCode(newHistory)(message.code)
       }
       else {
         setAskApproveIn(true)
