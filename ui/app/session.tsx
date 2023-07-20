@@ -4,8 +4,7 @@ import React from "react";
 import { Message } from "@/llm/base";
 import ChatInput from "@/app/chat_input";
 import ChatHistory from "@/app/chat_history";
-import InterpreterInput from "@/app/interpreter_in";
-import InterpreterOutput from "@/app/interpreter_out";
+import InterpreterIO from "@/app/interpreter_io";
 import { chatCall, codeCall, CodeResult } from "@/app/api_calls";
 
 
@@ -74,27 +73,45 @@ export default function Session() {
   }
 
   return (
-    <div>
-      <ChatHistory history={history} />
-      <ChatInput
-        innerRef={chatInputRef}
-        disabled={chatInputDisabled}
-        onMessage={onUserMessage(history)}
-      />
-      <InterpreterInput
-        code={code}
-        askApprove={askApproveIn}
-        onApprove={() => {executeCode(history)(code)}}
-        autoApprove={autoApproveIn}
-        setAutoApprove={setAutoApproveIn}
-      />
-      <InterpreterOutput
-        result={result}
-        askApprove={askApproveOut}
-        onApprove={() => {executeCodeDone(history)(result)}}
-        autoApprove={autoApproveOut}
-        setAutoApprove={setAutoApproveOut}
-      />
+    <div className="flex gap-4 h-full bg-blue-50">
+      <div className="flex-1 flex flex-col px-4">
+        <div className="flex-1 h-0 overflow-y-auto">
+          <ChatHistory history={history} />
+        </div>
+        <div className="flex-0">
+          <ChatInput
+            innerRef={chatInputRef}
+            disabled={chatInputDisabled}
+            onMessage={onUserMessage(history)}
+          />
+        </div>
+      </div>
+      <div className="flex-1 w-0 flex flex-col px-4 bg-blue-100 shadow-[0_0_25px_10px_rgba(0,0,0,0.15)]">
+        <div className="flex-1 flex flex-col h-0">
+          <div className="flex-1 h-0">
+            <InterpreterIO
+              title="Code"
+              content={code}
+              askApprove={askApproveIn}
+              onApprove={() => {executeCode(history)(code)}}
+              autoApprove={autoApproveIn}
+              setAutoApprove={setAutoApproveIn}
+            />
+          </div>
+        </div>
+        <div className="flex-1 flex flex-col h-0">
+          <div className="flex-1 h-0">
+            <InterpreterIO
+              title="Result"
+              content={result === null ? null : result.stdout + result.stderr}
+              askApprove={askApproveOut}
+              onApprove={() => {executeCodeDone(history)(result)}}
+              autoApprove={autoApproveOut}
+              setAutoApprove={setAutoApproveOut}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

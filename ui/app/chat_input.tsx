@@ -1,4 +1,5 @@
 import React from "react";
+import { BiSend } from "react-icons/bi";
 
 export default function ChatInput(
   {
@@ -16,8 +17,10 @@ export default function ChatInput(
     setMessage("");
   }
 
+  const canSend = !disabled && message.length > 0
+
   return (
-    <div>
+    <div className="flex gap-2 bg-white drop-shadow-sm border border-neutral-300 rounded-md p-4 my-8 mx-8 focus-within:border-neutral-500">
       <input
         type="text"
         ref={innerRef}
@@ -27,9 +30,16 @@ export default function ChatInput(
           if (event.key === "Enter") onSend()
         }}
         disabled={disabled}
-        style={{ backgroundColor: "#ccc" }}
+        className="flex-1 focus:outline-0 disabled:bg-transparent"
+        placeholder={disabled ? "Working..." : "Type your message"}
       />
-      <button onClick={onSend} disabled={disabled}>Send</button>
+      <button
+        onClick={onSend}
+        disabled={!canSend}
+        className="flex-0"
+      >
+        <BiSend size={24} color={canSend ? "black" : "#aaa"} />
+      </button>
     </div>
   )
 }
