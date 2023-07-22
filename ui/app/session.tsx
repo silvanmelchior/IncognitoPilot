@@ -7,17 +7,16 @@ import ChatHistory from "@/app/chat_history";
 import InterpreterIO from "@/app/interpreter_io";
 import { Interpreter } from "@/app/api_calls";
 import { useApprover } from "@/app/approver";
-import { ChatRound } from "@/app/chat_round";
+import { ChatRound, ChatRoundState } from "@/app/chat_round";
 
 
 export default function Session() {
   const [history, setHistory] = React.useState<Message[]>([])
-
-  const chatInputRef = React.useRef<HTMLInputElement | null>(null);
-  const [chatInputDisabled, setChatInputDisabled] = React.useState<boolean>(false)
-
+  const [chatRoundState, setChatRoundState] = React.useState<ChatRoundState>("not active")
   const [approverInRef, code, askApproveIn, autoApproveIn] = useApprover()
   const [approverOutRef, result, askApproveOut, autoApproveOut] = useApprover()
+
+  const chatInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const interpreterRef = React.useRef<Interpreter | null>(null);
   if(interpreterRef.current === null) {
@@ -29,20 +28,15 @@ export default function Session() {
   }
   React.useEffect(focusChatInput, [])
 
-  const endChatRound = () => {
-    setChatInputDisabled(false)
-    focusChatInput()
-  }
-
   const startChatRound = (message: string) => {
-    setChatInputDisabled(true)
     const chatRound = new ChatRound(
       history,
       setHistory,
       approverInRef.current,
       approverOutRef.current,
       interpreterRef.current!,
-      endChatRound
+      setChatRoundState,
+      focusChatInput
     )
     chatRound.start(message)
   }
@@ -57,7 +51,7 @@ export default function Session() {
         <div className="flex-0">
           <ChatInput
             innerRef={chatInputRef}
-            disabled={chatInputDisabled}
+            disabled={chatRoundState !== "not active"}
             onMessage={startChatRound}
           />
         </div>

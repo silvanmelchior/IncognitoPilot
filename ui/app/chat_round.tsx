@@ -3,6 +3,9 @@ import { chatCall, Interpreter } from "@/app/api_calls";
 import { Approver } from "@/app/approver";
 
 
+export type ChatRoundState = "not active" | "waiting for model" |
+  "waiting for interpreter" | "waiting for approval"
+
 export class ChatRound {
   constructor(
     private _history: Message[],
@@ -10,6 +13,7 @@ export class ChatRound {
     private readonly _approverIn: Approver,
     private readonly _approverOut: Approver,
     private readonly _interpreter: Interpreter,
+    private readonly _setState: (state: ChatRoundState) => void,
     private readonly _doneCallback: () => void
   ) {}
 
@@ -23,24 +27,29 @@ export class ChatRound {
   start = (message: string) => {
     const newMessage: Message = { role: "user", text: message }
     const newHistory = this.extendHistory(newMessage)
+    this._setState("waiting for model")
     chatCall(newHistory).then(this.onModelMessage)
   }
 
   private onModelMessage = (message: Message) => {
     this.extendHistory(message)
     if(message.code !== undefined) {
-      this._approverIn.whenApproved(message.code).then(() => {
-        this.executeCode(message.code ?? "")
+      this._setState("waiting for approval")
+      this._approverIn.getApproval(message.code).then(() => {
+        this.executeCode(message.code!)
       })
     }
     else {
+      this._setState("not active")
       this._doneCallback()
     }
   }
 
   private executeCode = (code: string) => {
+    this._setState("waiting for interpreter")
     this._interpreter.run(code).then(result => {
-      this._approverOut.whenApproved(result).then(() => {
+      this._setState("waiting for approval")
+      this._approverOut.getApproval(result).then(() => {
         this.executeCodeDone(result)
       })
     })
@@ -49,6 +58,7 @@ export class ChatRound {
   private executeCodeDone = (result: string) => {
     const newMessage: Message = { role: "interpreter", code_result: result }
     const newHistory = this.extendHistory(newMessage)
+    this._setState("waiting for model")
     chatCall(newHistory).then(this.onModelMessage)
   }
 

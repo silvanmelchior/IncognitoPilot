@@ -26,7 +26,7 @@ export class Approver {
     }
   }
 
-  whenApproved = (content: string) => {
+  getApproval = (content: string) => {
     this._setContent(content)
     return new Promise<void>((resolve, reject) => {
       if(this._autoApprove) {
