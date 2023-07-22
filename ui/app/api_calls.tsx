@@ -7,30 +7,38 @@ export async function chatCall(messages: Message[]): Promise<Message> {
 }
 
 export class Interpreter {
-  ws: WebSocket
-  connected: boolean
-  on_connection: Promise<void>
+  private _ws: WebSocket | null
 
   constructor() {
-    this.connected = false
-    this.ws = new WebSocket(`ws://${process.env.NEXT_PUBLIC_INTERPRETER_URL}/run`);
-    this.on_connection = new Promise((resolve, reject) => {
-      this.ws.onopen = () => {
-        this.connected = true
+    this._ws = null
+  }
+
+  private connect() {
+    this._ws = new WebSocket(`ws://${process.env.NEXT_PUBLIC_INTERPRETER_URL}/run`);
+    return new Promise((resolve, reject) => {
+      this._ws!.onopen = () => {
         resolve()
+      }
+    })
+  }
+
+  private send(code: string) {
+    return new Promise((resolve, reject) => {
+      this._ws!.send(code)
+      this._ws!.onmessage = (event) => {
+        resolve(event.data);
       }
     })
   }
 
   run(code: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      if(this.connected) {
-        this.ws.send(code);
+      if(this._ws === null) {
+        this.connect().then(() => {
+          this.send(code).then(resolve)
+        })
       } else {
-        this.on_connection.then(() => this.ws.send(code))
-      }
-      this.ws.onmessage = (event) => {
-        resolve(event.data);
+        this.send(code).then(resolve)
       }
     })
   }
