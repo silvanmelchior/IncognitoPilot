@@ -16,6 +16,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="google" content="notranslate" />
+      </head>
       <body className={inter.className + " h-screen"}>{children}</body>
     </html>
   )
