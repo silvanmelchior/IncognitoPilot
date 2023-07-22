@@ -3,30 +3,15 @@ import { chatCall, Interpreter } from "@/app/api_calls";
 import { Approver } from "@/app/approver";
 
 
-// TODO: Faster way of setting constructor in typescript?
 export class ChatRound {
-  private _history: Message[]
-  private readonly _setHistory: (message: Message[]) => void
-  private readonly _approverIn: Approver
-  private readonly _approverOut: Approver
-  private readonly _interpreter: Interpreter
-  private readonly _doneCallback: () => void
-
   constructor(
-    history: Message[],
-    setHistory: (message: Message[]) => void,
-    approverIn: Approver,
-    approverOut: Approver,
-    interpreter: Interpreter,
-    doneCallback: () => void
-  ) {
-    this._history = history
-    this._setHistory = setHistory
-    this._approverIn = approverIn
-    this._approverOut = approverOut
-    this._interpreter = interpreter
-    this._doneCallback = doneCallback
-  }
+    private _history: Message[],
+    private readonly _setHistory: (message: Message[]) => void,
+    private readonly _approverIn: Approver,
+    private readonly _approverOut: Approver,
+    private readonly _interpreter: Interpreter,
+    private readonly _doneCallback: () => void
+  ) {}
 
   private extendHistory(message: Message) {
     const newHistory = [...this._history, message]

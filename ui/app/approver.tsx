@@ -1,24 +1,14 @@
 import React from "react";
 
 export class Approver {
-  private readonly _setContent: (content: string) => void
-  private _autoApprove: boolean
-  private readonly _setAutoApprove: (autoApprove: boolean) => void
-  private readonly _setAskApprove: (autoApprove: boolean) => void
-  private _resolveHandler: (value: void) => void | null
+  private _resolveHandler: (value: void) => void | null = null
 
   constructor(
-    setContent: (content: string) => void,
-    autoApprove: boolean,
-    setAutoApprove: (autoApprove: boolean) => void,
-    setAskApprove: (askApprove: boolean) => void
-  ) {
-    this._setContent = setContent
-    this._autoApprove = autoApprove
-    this._setAutoApprove = setAutoApprove
-    this._setAskApprove = setAskApprove
-    this._resolveHandler = null
-  }
+    private readonly _setContent: (content: string) => void,
+    private _autoApprove: boolean,
+    private readonly _setAutoApprove: (autoApprove: boolean) => void,
+    private readonly _setAskApprove: (askApprove: boolean) => void
+  ) {}
 
   setAutoApprove = (autoApprove: boolean) => {
     this._autoApprove = autoApprove

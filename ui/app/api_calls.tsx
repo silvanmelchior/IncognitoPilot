@@ -7,11 +7,7 @@ export async function chatCall(messages: Message[]): Promise<Message> {
 }
 
 export class Interpreter {
-  private _ws: WebSocket | null
-
-  constructor() {
-    this._ws = null
-  }
+  private _ws: WebSocket | null = null
 
   private connect() {
     this._ws = new WebSocket(`ws://${process.env.NEXT_PUBLIC_INTERPRETER_URL}/run`);
