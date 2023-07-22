@@ -26,10 +26,10 @@ export class Approver {
     }
   }
 
-  getApproval = (content: string) => {
+  getApproval = (content: string, tmpAutoApprove: boolean = false) => {
     this._setContent(content)
     return new Promise<void>((resolve, reject) => {
-      if(this._autoApprove) {
+      if(this._autoApprove || tmpAutoApprove) {
         resolve()
       } else {
         this._resolveHandler = resolve

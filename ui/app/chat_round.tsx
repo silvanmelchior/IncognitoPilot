@@ -49,7 +49,10 @@ export class ChatRound {
     this._setState("waiting for interpreter")
     this._interpreter.run(code).then(result => {
       this._setState("waiting for approval")
-      this._approverOut.getApproval(result).then(() => {
+      const tmpAutoApprove = result === ""
+      const resultText = tmpAutoApprove ?
+        "(empty output was automatically approved)" : result
+      this._approverOut.getApproval(resultText, tmpAutoApprove).then(() => {
         this.executeCodeDone(result)
       })
     })
