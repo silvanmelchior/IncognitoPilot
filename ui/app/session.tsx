@@ -5,20 +5,19 @@ import { Message } from "@/llm/base";
 import ChatInput from "@/app/chat_input";
 import ChatHistory from "@/app/chat_history";
 import InterpreterIO from "@/app/interpreter_io";
-import { chatCall, Interpreter } from "@/app/api_calls";
+import { Interpreter } from "@/app/api_calls";
 import { useApprover } from "@/app/approver";
+import { ChatRound } from "@/app/chat_round";
 
 
 export default function Session() {
   const [history, setHistory] = React.useState<Message[]>([])
-  const [chatInputDisabled, setChatInputDisabled] = React.useState<boolean>(false)
+
   const chatInputRef = React.useRef<HTMLInputElement | null>(null);
+  const [chatInputDisabled, setChatInputDisabled] = React.useState<boolean>(false)
 
-  const [code, setCode] = React.useState<string | null>(null)
-  const [approverInRef, askApproveIn, autoApproveIn] = useApprover()
-
-  const [result, setResult] = React.useState<string | null>(null)
-  const [approverOutRef, askApproveOut, autoApproveOut] = useApprover()
+  const [approverInRef, code, askApproveIn, autoApproveIn] = useApprover()
+  const [approverOutRef, result, askApproveOut, autoApproveOut] = useApprover()
 
   const interpreterRef = React.useRef<Interpreter | null>(null);
   if(interpreterRef.current === null) {
@@ -30,48 +29,24 @@ export default function Session() {
   }
   React.useEffect(focusChatInput, [])
 
-  const readyForUserMessage = () => {
+  const endChatRound = () => {
     setChatInputDisabled(false)
     focusChatInput()
   }
 
-  const onUserMessage = (history: Message[]) => (message: string) => {
+  const startChatRound = (message: string) => {
     setChatInputDisabled(true)
-    const newMessage: Message = { role: "user", text: message }
-    const newHistory = [...history, newMessage]
-    setHistory(newHistory)
-    chatCall(newHistory).then(onModelMessage(newHistory))
+    const chatRound = new ChatRound(
+      history,
+      setHistory,
+      approverInRef.current,
+      approverOutRef.current,
+      interpreterRef.current!,
+      endChatRound
+    )
+    chatRound.start(message)
   }
 
-  const onModelMessage = (history: Message[]) => (message: Message) => {
-    const newHistory = [...history, message]
-    setHistory(newHistory)
-    if(message.code !== undefined) {
-      setCode(message.code)
-      approverInRef.current.whenApproved().then(() => {
-        executeCode(newHistory)(message.code)
-      })
-    }
-    else {
-      readyForUserMessage()
-    }
-  }
-
-  const executeCode = (history: Message[]) => (code: string) => {
-    interpreterRef.current?.run(code).then(result => {
-      setResult(result)
-      approverOutRef.current.whenApproved().then(() => {
-        executeCodeDone(history)(result)
-      })
-    })
-  }
-
-  const executeCodeDone = (history: Message[]) => (result: string) => {
-    const newMessage: Message = { role: "interpreter", code_result: result }
-    const newHistory = [...history, newMessage]
-    setHistory(newHistory)
-    chatCall(newHistory).then(onModelMessage(newHistory))
-  }
 
   return (
     <div className="flex gap-4 h-full bg-blue-50">
@@ -83,7 +58,7 @@ export default function Session() {
           <ChatInput
             innerRef={chatInputRef}
             disabled={chatInputDisabled}
-            onMessage={onUserMessage(history)}
+            onMessage={startChatRound}
           />
         </div>
       </div>

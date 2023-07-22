@@ -1,16 +1,19 @@
 import React from "react";
 
 export class Approver {
+  private readonly _setContent: (content: string) => void
   private _autoApprove: boolean
   private readonly _setAutoApprove: (autoApprove: boolean) => void
   private readonly _setAskApprove: (autoApprove: boolean) => void
   private _resolveHandler: (value: void) => void | null
 
   constructor(
+    setContent: (content: string) => void,
     autoApprove: boolean,
     setAutoApprove: (autoApprove: boolean) => void,
     setAskApprove: (askApprove: boolean) => void
   ) {
+    this._setContent = setContent
     this._autoApprove = autoApprove
     this._setAutoApprove = setAutoApprove
     this._setAskApprove = setAskApprove
@@ -33,7 +36,8 @@ export class Approver {
     }
   }
 
-  whenApproved = () => {
+  whenApproved = (content: string) => {
+    this._setContent(content)
     return new Promise<void>((resolve, reject) => {
       if(this._autoApprove) {
         resolve()
@@ -47,8 +51,10 @@ export class Approver {
 }
 
 export function useApprover() {
+  const [content, setContent] = React.useState<string | null>(null)
   const [askApprove, setAskApprove] = React.useState<boolean>(false)
   const [autoApprove, setAutoApprove] = React.useState<boolean>(false)
-  const approverRef = React.useRef(new Approver(autoApprove, setAutoApprove, setAskApprove))
-  return [approverRef, askApprove, autoApprove]
+  const approverRef = React.useRef(new Approver(
+    setContent, autoApprove, setAutoApprove, setAskApprove))
+  return [approverRef, content, askApprove, autoApprove]
 }
