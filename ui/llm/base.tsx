@@ -5,8 +5,5 @@ export type Message = {
   role: "user" | "model" | "interpreter",
   text?: string
   code?: string
-  code_result?: {
-    stdout: string,
-    stderr: string
-  }
+  code_result?: string
 }

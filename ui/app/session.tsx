@@ -5,7 +5,7 @@ import { Message } from "@/llm/base";
 import ChatInput from "@/app/chat_input";
 import ChatHistory from "@/app/chat_history";
 import InterpreterIO from "@/app/interpreter_io";
-import { chatCall, codeCall, CodeResult } from "@/app/api_calls";
+import { chatCall, codeCall } from "@/app/api_calls";
 
 
 export default function Session() {
@@ -17,7 +17,7 @@ export default function Session() {
   const [askApproveIn, setAskApproveIn] = React.useState<boolean>(false)
   const [autoApproveIn, setAutoApproveIn] = React.useState<boolean>(false)
 
-  const [result, setResult] = React.useState<CodeResult | null>(null)
+  const [result, setResult] = React.useState<string | null>(null)
   const [askApproveOut, setAskApproveOut] = React.useState<boolean>(false)
   const [autoApproveOut, setAutoApproveOut] = React.useState<boolean>(false)
 
@@ -64,7 +64,7 @@ export default function Session() {
     })
   }
 
-  const executeCodeDone = (history: Message[]) => (result: CodeResult) => {
+  const executeCodeDone = (history: Message[]) => (result: string) => {
     setAskApproveOut(false)
     const newMessage: Message = { role: "interpreter", code_result: result }
     const newHistory = [...history, newMessage]
@@ -103,7 +103,7 @@ export default function Session() {
           <div className="flex-1 h-0">
             <InterpreterIO
               title="Result"
-              content={result === null ? null : result.stdout + result.stderr}
+              content={result}
               askApprove={askApproveOut}
               onApprove={() => {executeCodeDone(history)(result)}}
               autoApprove={autoApproveOut}

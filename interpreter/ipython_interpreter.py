@@ -1,23 +1,24 @@
+from pathlib import Path
+from typing import Optional
+import tempfile
 import time
 import queue
 import subprocess
 import threading
 
 
-# TODO: type hings
-# TODO: once have error, do not continue execution
-# TODO: refactor run_cmd
-class PythonInterpreter:
+class IPythonInterpreter:
     _END_MESSAGE = "__ INTERPRETER END OF EXECUTION __"
+    _LAST_VAR = "_INTERPRETER_last_val"
     _TIMEOUT = 30
 
-    def __init__(self, python_path, working_dir):
-        self._python_path = python_path
+    def __init__(self, ipython_path: Path, working_dir: Path):
+        self._ipython_path = ipython_path
         self._working_dir = working_dir
         self._start_python()
 
     def _start_python(self):
-        self._process = subprocess.Popen([self._python_path, "-i", "-q"],
+        self._process = subprocess.Popen([str(self._ipython_path), "--classic"],
                                          text=True,
                                          cwd=self._working_dir,
                                          stdin=subprocess.PIPE,
@@ -32,6 +33,7 @@ class PythonInterpreter:
                                           args=(self._process.stdout, self._q_stdout),
                                           daemon=True)
         self._t_stdout.start()
+        self._drain_queue(self._q_stdout)
 
         self._q_stderr = queue.Queue()
         self._t_stderr = threading.Thread(target=self._reader_thread,
@@ -49,16 +51,38 @@ class PythonInterpreter:
         while not self._stop_threads:
             q.put(pipe.readline())
 
-    def _send_cmd(self, cmd):
-        if not cmd.endswith("\n"):
-            cmd += "\n"
-        cmd += f"'{self._END_MESSAGE}'\n"
-        self._p_stdin.write(cmd)
+    @staticmethod
+    def _drain_queue(q: queue.Queue, timeout: float = 1.0):
+        try:
+            while True:
+                q.get(timeout=timeout)
+        except queue.Empty:
+            pass
+
+    def _create_script(self, script: str) -> Path:
+        lines = script.splitlines()
+        if len(lines) > 0:
+            is_eval = True
+            try:
+                compile(lines[-1], "<stdin>", "eval")
+            except SyntaxError:
+                is_eval = False
+            if is_eval:
+                lines[-1] = f"{self._LAST_VAR} = ({lines[-1]})"
+                lines.append(f"if {self._LAST_VAR} is not None:")
+                lines.append(f"    print({self._LAST_VAR})")
+
+        script = "\n".join(lines) + "\n"
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
+            f.write(script)
+
+        return Path(f.name)
+
+    def _run_script(self, script_path: Path):
+        self._p_stdin.write(f"%run -i {script_path}\n'{self._END_MESSAGE}'\n")
         self._p_stdin.flush()
 
-    def run_cmd(self, cmd):
-        self._send_cmd(cmd)
-
+    def _fetch_result(self) -> Optional[str]:
         start = time.time()
         stdout = ""
         while True:
@@ -82,4 +106,13 @@ class PythonInterpreter:
         while not self._q_stderr.empty():
             stderr += self._q_stderr.get()
 
-        return stdout, stderr
+        return stdout + stderr
+
+    def run_cell(self, script: str) -> Optional[str]:
+        """Run the whole cell and return the last result.
+        Returns None if the interpreter timed out."""
+        script_path = self._create_script(script)
+        self._run_script(script_path)
+        result = self._fetch_result()
+        script_path.unlink()
+        return result

@@ -1,9 +1,10 @@
-import subprocess
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from ipython_interpreter import IPythonInterpreter
 
 app = FastAPI()
 app.add_middleware(
@@ -14,22 +15,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# TODO
+interpreter = IPythonInterpreter(
+    Path("C:/Users/sime/AppData/Local/pypoetry/Cache/virtualenvs/interpreter-R0GDqdSm-py3.11/Scripts/ipython"),
+    Path("C:/Users/sime/Desktop/code_interpreter")
+)
+
 
 class RunRequest(BaseModel):
     code: str
 
 
 class RunResponse(BaseModel):
-    stdout: str
-    stderr: str
+    result: str
 
 
 @app.post("/run")
 def run(req: RunRequest) -> RunResponse:
-    process = subprocess.run(
-        ["C:/Users/sime/AppData/Local/pypoetry/Cache/virtualenvs/interpreter-R0GDqdSm-py3.11/Scripts/python", "-c", req.code],  # TODO
-        capture_output=True,
-        text=True,
-        cwd="C:/Users/sime/Desktop/code_interpreter"  # TODO
-    )
-    return RunResponse(stdout=process.stdout, stderr=process.stderr)
+    result = interpreter.run_cell(req.code)
+    if result is None:
+        result = "ERROR: TIMEOUT REACHED"
+    return RunResponse(result=result)

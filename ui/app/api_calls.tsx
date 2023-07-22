@@ -8,12 +8,7 @@ export async function chatCall(messages: Message[]): Promise<Message> {
   return response.data
 }
 
-export type CodeResult = {
-  stdout: string
-  stderr: string
-}
-
-export async function codeCall(code: string): Promise<CodeResult> {
+export async function codeCall(code: string): Promise<string> {
   const response = await axios.post(INTERPRETER_URL + "/run", { code })
-  return response.data
+  return response.data.result
 }

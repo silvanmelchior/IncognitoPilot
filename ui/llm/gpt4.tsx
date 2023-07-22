@@ -64,7 +64,7 @@ function msgToGPTMsg(msg: Message): GPTMessage {
     return {
       role: "function",
       name: "run_python_code",
-      content: JSON.stringify(msg.code_result)
+      content: msg.code_result ?? ""
     }
   }
   throw new Error("Invalid message role")
@@ -89,7 +89,7 @@ function GPTMsgToMsg(msg: GPTMessage): Message {
   if(msg.role == "function") {
     return {
       role: "interpreter",
-      code_result: msg.content !== null ? JSON.parse(msg.content) : undefined
+      code_result: msg.content ?? ""
     }
   }
   throw new Error("Invalid message role")
