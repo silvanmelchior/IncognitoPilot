@@ -12,12 +12,15 @@ export default function ChatInput(
     onMessage: (message: string) => void
   }) {
   const [message, setMessage] = React.useState<string>("")
-  const onSend = () => {
-    onMessage(message);
-    setMessage("");
-  }
 
   const canSend = !disabled && message.length > 0
+
+  const onSend = () => {
+    if (canSend) {
+      onMessage(message);
+      setMessage("");
+    }
+  }
 
   return (
     <div className="flex gap-2 bg-white drop-shadow-sm border border-neutral-300 rounded-md p-4 my-8 mx-8 focus-within:border-neutral-500">

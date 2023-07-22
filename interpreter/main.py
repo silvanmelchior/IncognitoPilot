@@ -1,8 +1,9 @@
+import os
+import sys
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 
 from ipython_interpreter import IPythonInterpreter
 
@@ -15,24 +16,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# TODO
-interpreter = IPythonInterpreter(
-    Path("C:/Users/sime/AppData/Local/pypoetry/Cache/virtualenvs/interpreter-R0GDqdSm-py3.11/Scripts/ipython"),
-    Path("C:/Users/sime/Desktop/code_interpreter")
-)
 
+@app.websocket("/run")
+async def run(websocket: WebSocket):
+    await websocket.accept()
+    interpreter = IPythonInterpreter(
+        Path(sys.executable).parent / 'ipython.exe',
+        Path(os.environ["WORKING_DIRECTORY"])
+    )
 
-class RunRequest(BaseModel):
-    code: str
+    try:
+        while True:
+            script = await websocket.receive_text()
+            result = interpreter.run_cell(script)
+            if result is None:
+                result = "ERROR: TIMEOUT REACHED"
+            await websocket.send_text(result)
+    except WebSocketDisconnect:
+        pass
 
-
-class RunResponse(BaseModel):
-    result: str
-
-
-@app.post("/run")
-def run(req: RunRequest) -> RunResponse:
-    result = interpreter.run_cell(req.code)
-    if result is None:
-        result = "ERROR: TIMEOUT REACHED"
-    return RunResponse(result=result)
+    interpreter.stop()

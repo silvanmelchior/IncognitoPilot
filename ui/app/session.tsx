@@ -5,7 +5,7 @@ import { Message } from "@/llm/base";
 import ChatInput from "@/app/chat_input";
 import ChatHistory from "@/app/chat_history";
 import InterpreterIO from "@/app/interpreter_io";
-import { chatCall, codeCall } from "@/app/api_calls";
+import { chatCall, Interpreter } from "@/app/api_calls";
 
 
 export default function Session() {
@@ -21,9 +21,19 @@ export default function Session() {
   const [askApproveOut, setAskApproveOut] = React.useState<boolean>(false)
   const [autoApproveOut, setAutoApproveOut] = React.useState<boolean>(false)
 
+  const interpreterRef = React.useRef<Interpreter | null>(null);
+  if(interpreterRef.current === null) {
+    interpreterRef.current = new Interpreter()
+  }
+
+  const focusChatInput = () => {
+    setTimeout(() => chatInputRef.current && chatInputRef.current.focus(), 100)
+  }
+  React.useEffect(focusChatInput, [])
+
   const readyForUserMessage = () => {
-    setChatInputDisabled(false);
-    setTimeout(() => chatInputRef.current && chatInputRef.current.focus(), 10)
+    setChatInputDisabled(false)
+    focusChatInput()
   }
 
   const onUserMessage = (history: Message[]) => (message: string) => {
@@ -53,7 +63,7 @@ export default function Session() {
 
   const executeCode = (history: Message[]) => (code: string) => {
     setAskApproveIn(false)
-    codeCall(code).then(result => {
+    interpreterRef.current?.run(code).then(result => {
       setResult(result)
       if(autoApproveOut) {
         executeCodeDone(history)(result)

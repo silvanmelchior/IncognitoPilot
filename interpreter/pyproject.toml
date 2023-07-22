@@ -12,6 +12,7 @@ python = "^3.11"
 fastapi = "^0.100.0"
 uvicorn = "^0.23.0"
 ipython = "^8.14.0"
+websockets = "^11.0.3"
 
 [tool.poetry.group.tools.dependencies]
 numpy = "^1.25.1"

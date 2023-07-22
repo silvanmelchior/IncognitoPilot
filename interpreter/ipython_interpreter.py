@@ -15,9 +15,12 @@ class IPythonInterpreter:
     def __init__(self, ipython_path: Path, working_dir: Path):
         self._ipython_path = ipython_path
         self._working_dir = working_dir
-        self._start_python()
+        self._start()
 
-    def _start_python(self):
+    def __del__(self):
+        self.stop()
+
+    def _start(self):
         self._process = subprocess.Popen([str(self._ipython_path), "--classic"],
                                          text=True,
                                          cwd=self._working_dir,
@@ -41,11 +44,15 @@ class IPythonInterpreter:
                                           daemon=True)
         self._t_stderr.start()
 
-    def _kill_python(self):
-        self._process.kill()
-        self._stop_threads = True
-        self._t_stdout.join()
-        self._t_stderr.join()
+        self._running = True
+
+    def stop(self):
+        if self._running:
+            self._process.kill()
+            self._stop_threads = True
+            self._t_stdout.join()
+            self._t_stderr.join()
+            self._running = False
 
     def _reader_thread(self, pipe, q):
         while not self._stop_threads:
@@ -94,8 +101,8 @@ class IPythonInterpreter:
                 line = None
 
             if line is None:
-                self._kill_python()
-                self._start_python()
+                self.stop()
+                self._start()
                 return None
 
             if self._END_MESSAGE in line:
