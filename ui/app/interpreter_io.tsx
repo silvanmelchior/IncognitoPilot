@@ -1,20 +1,20 @@
 import React from "react";
+import { Approver } from "@/app/approver";
+
 
 export default function InterpreterIO(
   {
     title,
     content,
     askApprove,
-    autoApprove,
-    setAutoApprove,
-    onApprove
+    approver,
+    autoApprove
   }: {
     title: string,
     content: string | null,
     askApprove: boolean,
-    onApprove: () => void
-    autoApprove: boolean,
-    setAutoApprove: (autoApprove: boolean) => void,
+    approver: Approver,
+    autoApprove: boolean
   }) {
   return (
     <div className="h-full flex flex-col">
@@ -28,14 +28,14 @@ export default function InterpreterIO(
             className="align-middle accent-red-600"
             type="checkbox"
             checked={autoApprove}
-            onChange={e => setAutoApprove(e.target.checked)}
+            onChange={e => approver.setAutoApprove(e.target.checked)}
           />{' '}
           auto-approve
         </div>
         <div className="flex-0 ml-4">
           <button
             className="px-4 py-2 bg-red-600 disabled:bg-gray-100 text-white disabled:text-gray-300 rounded-md"
-            onClick={onApprove}
+            onClick={approver.approve}
             disabled={!askApprove}
           >Approve</button>
         </div>

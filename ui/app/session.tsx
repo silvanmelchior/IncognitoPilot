@@ -6,6 +6,7 @@ import ChatInput from "@/app/chat_input";
 import ChatHistory from "@/app/chat_history";
 import InterpreterIO from "@/app/interpreter_io";
 import { chatCall, Interpreter } from "@/app/api_calls";
+import { useApprover } from "@/app/approver";
 
 
 export default function Session() {
@@ -14,12 +15,10 @@ export default function Session() {
   const chatInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const [code, setCode] = React.useState<string | null>(null)
-  const [askApproveIn, setAskApproveIn] = React.useState<boolean>(false)
-  const [autoApproveIn, setAutoApproveIn] = React.useState<boolean>(false)
+  const [approverInRef, askApproveIn, autoApproveIn] = useApprover()
 
   const [result, setResult] = React.useState<string | null>(null)
-  const [askApproveOut, setAskApproveOut] = React.useState<boolean>(false)
-  const [autoApproveOut, setAutoApproveOut] = React.useState<boolean>(false)
+  const [approverOutRef, askApproveOut, autoApproveOut] = useApprover()
 
   const interpreterRef = React.useRef<Interpreter | null>(null);
   if(interpreterRef.current === null) {
@@ -49,12 +48,9 @@ export default function Session() {
     setHistory(newHistory)
     if(message.code !== undefined) {
       setCode(message.code)
-      if(autoApproveIn) {
+      approverInRef.current.whenApproved().then(() => {
         executeCode(newHistory)(message.code)
-      }
-      else {
-        setAskApproveIn(true)
-      }
+      })
     }
     else {
       readyForUserMessage()
@@ -62,20 +58,15 @@ export default function Session() {
   }
 
   const executeCode = (history: Message[]) => (code: string) => {
-    setAskApproveIn(false)
     interpreterRef.current?.run(code).then(result => {
       setResult(result)
-      if(autoApproveOut) {
+      approverOutRef.current.whenApproved().then(() => {
         executeCodeDone(history)(result)
-      }
-      else {
-        setAskApproveOut(true)
-      }
+      })
     })
   }
 
   const executeCodeDone = (history: Message[]) => (result: string) => {
-    setAskApproveOut(false)
     const newMessage: Message = { role: "interpreter", code_result: result }
     const newHistory = [...history, newMessage]
     setHistory(newHistory)
@@ -103,9 +94,8 @@ export default function Session() {
               title="Code"
               content={code}
               askApprove={askApproveIn}
-              onApprove={() => {executeCode(history)(code)}}
               autoApprove={autoApproveIn}
-              setAutoApprove={setAutoApproveIn}
+              approver={approverInRef.current}
             />
           </div>
         </div>
@@ -115,9 +105,8 @@ export default function Session() {
               title="Result"
               content={result}
               askApprove={askApproveOut}
-              onApprove={() => {executeCodeDone(history)(result)}}
               autoApprove={autoApproveOut}
-              setAutoApprove={setAutoApproveOut}
+              approver={approverOutRef.current}
             />
           </div>
         </div>
