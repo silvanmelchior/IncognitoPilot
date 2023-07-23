@@ -1,11 +1,10 @@
 import os
-import sys
 from pathlib import Path
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
-from ipython_interpreter import IPythonInterpreter
+from interpreter import IPythonInterpreter
 
 app = FastAPI()
 app.add_middleware(
@@ -21,8 +20,8 @@ app.add_middleware(
 async def run(websocket: WebSocket):
     await websocket.accept()
     interpreter = IPythonInterpreter(
-        Path(sys.executable).parent / 'ipython.exe',
-        Path(os.environ["WORKING_DIRECTORY"])
+        working_dir=Path(os.environ["WORKING_DIRECTORY"]),
+        timeout=30
     )
 
     try:

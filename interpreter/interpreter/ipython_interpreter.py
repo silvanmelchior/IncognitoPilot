@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from typing import Optional
 import tempfile
@@ -9,12 +10,17 @@ import threading
 
 class IPythonInterpreter:
     _END_MESSAGE = "__ INTERPRETER END OF EXECUTION __"
+    _INTERPRETER_PROMPT = ">>> "
     _LAST_VAR = "_INTERPRETER_last_val"
-    _TIMEOUT = 30
 
-    def __init__(self, ipython_path: Path, working_dir: Path):
-        self._ipython_path = ipython_path
+    def __init__(self, *, working_dir: Path = None, ipython_path: Path = None,
+                 timeout: int = None):
         self._working_dir = working_dir
+        if ipython_path is None:
+            self._ipython_path = Path(sys.executable).parent / 'ipython.exe'
+        else:
+            self._ipython_path = ipython_path
+        self._timeout = timeout
         self._start()
 
     def __del__(self):
@@ -36,7 +42,6 @@ class IPythonInterpreter:
                                           args=(self._process.stdout, self._q_stdout),
                                           daemon=True)
         self._t_stdout.start()
-        self._drain_queue(self._q_stdout)
 
         self._q_stderr = queue.Queue()
         self._t_stderr = threading.Thread(target=self._reader_thread,
@@ -44,6 +49,7 @@ class IPythonInterpreter:
                                           daemon=True)
         self._t_stderr.start()
 
+        self._wait_till_started()
         self._running = True
 
     def stop(self):
@@ -58,13 +64,39 @@ class IPythonInterpreter:
         while not self._stop_threads:
             q.put(pipe.readline())
 
-    @staticmethod
-    def _drain_queue(q: queue.Queue, timeout: float = 1.0):
-        try:
-            while True:
-                q.get(timeout=timeout)
-        except queue.Empty:
-            pass
+    def _read_stdout(self, timeout: Optional[int]) -> Optional[str]:
+        start = time.time()
+        stdout = ""
+        while True:
+            try:
+                line = self._q_stdout.get(timeout=timeout)
+            except queue.Empty:
+                line = None
+            if timeout is not None and time.time() - start > timeout:
+                line = None
+
+            if line is None:
+                return None
+
+            if self._END_MESSAGE in line:
+                break
+            stdout += line
+
+        return stdout[len(self._INTERPRETER_PROMPT):]
+
+    def _read_stderr(self) -> str:
+        stderr = ""
+        while not self._q_stderr.empty():
+            stderr += self._q_stderr.get()
+        return stderr
+
+    def _write_stdin(self, text: str):
+        self._p_stdin.write(text)
+        self._p_stdin.flush()
+
+    def _wait_till_started(self):
+        self._write_stdin(f"'{self._END_MESSAGE}'\n")
+        self._read_stdout(timeout=10)
 
     def _create_script(self, script: str) -> Path:
         lines = script.splitlines()
@@ -86,33 +118,16 @@ class IPythonInterpreter:
         return Path(f.name)
 
     def _run_script(self, script_path: Path):
-        self._p_stdin.write(f"%run -i {script_path}\n'{self._END_MESSAGE}'\n")
-        self._p_stdin.flush()
+        self._write_stdin(f"%run -i {script_path}\n'{self._END_MESSAGE}'\n")
 
     def _fetch_result(self) -> Optional[str]:
-        start = time.time()
-        stdout = ""
-        while True:
-            try:
-                line = self._q_stdout.get(timeout=self._TIMEOUT)
-            except queue.Empty:
-                line = None
-            if time.time() - start > self._TIMEOUT:
-                line = None
+        stdout = self._read_stdout(timeout=self._timeout)
+        if stdout is None:
+            self.stop()
+            self._start()
+            return None
 
-            if line is None:
-                self.stop()
-                self._start()
-                return None
-
-            if self._END_MESSAGE in line:
-                break
-            stdout += line
-
-        stderr = ""
-        while not self._q_stderr.empty():
-            stderr += self._q_stderr.get()
-
+        stderr = self._read_stderr()
         return stdout + stderr
 
     def run_cell(self, script: str) -> Optional[str]:
