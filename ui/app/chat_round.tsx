@@ -21,14 +21,12 @@ export class ChatRound {
     const newHistory = [...this._history, message]
     this._setHistory(newHistory)
     this._history = newHistory
-    return newHistory
   }
 
   start = (message: string) => {
-    const newMessage: Message = { role: "user", text: message }
-    const newHistory = this.extendHistory(newMessage)
+    this.extendHistory({ role: "user", text: message })
     this._setState("waiting for model")
-    chatCall(newHistory).then(this.onModelMessage)
+    chatCall(this._history).then(this.onModelMessage)
   }
 
   private onModelMessage = (message: Message) => {
@@ -60,9 +58,9 @@ export class ChatRound {
 
   private executeCodeDone = (result: string) => {
     const newMessage: Message = { role: "interpreter", code_result: result }
-    const newHistory = this.extendHistory(newMessage)
+    this.extendHistory(newMessage)
     this._setState("waiting for model")
-    chatCall(newHistory).then(this.onModelMessage)
+    chatCall(this._history).then(this.onModelMessage)
   }
 
 }
