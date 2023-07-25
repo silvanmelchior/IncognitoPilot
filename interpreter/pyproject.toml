@@ -10,21 +10,11 @@ packages = [{include = "interpreter"}]
 python = "^3.11"
 fastapi = "^0.100.0"
 uvicorn = "^0.23.0"
-ipython = "^8.14.0"
 websockets = "^11.0.3"
-
-[tool.poetry.group.tools.dependencies]
-numpy = "^1.25.1"
-pandas = "^2.0.3"
-scikit-learn = "^1.3.0"
-requests = "^2.31.0"
-opencv-python = "^4.8.0.74"
-matplotlib = "^3.7.2"
-faker = "^19.1.0"
-
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
+ipython = "^8.14.0"
 
 [build-system]
 requires = ["poetry-core"]

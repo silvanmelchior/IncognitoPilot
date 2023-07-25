@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 from typing import Optional
@@ -14,22 +15,41 @@ class IPythonInterpreter:
     _LAST_VAR = "_INTERPRETER_last_val"
 
     def __init__(self, *, working_dir: Path = None, ipython_path: Path = None,
-                 timeout: int = None):
+                 timeout: int = None, deactivate_venv: bool = False):
         self._working_dir = working_dir
         if ipython_path is None:
             self._ipython_path = Path(sys.executable).parent / 'ipython.exe'
         else:
             self._ipython_path = ipython_path
         self._timeout = timeout
+        self._deactivate_venv = deactivate_venv
         self._start()
 
     def __del__(self):
         self.stop()
 
+    def _get_env(self):
+        env = os.environ.copy()
+        if self._deactivate_venv:
+            if "VIRTUAL_ENV" in env:
+                del env["VIRTUAL_ENV"]
+            if "_OLD_VIRTUAL_PROMPT" in env:
+                env["PROMPT"] = "_OLD_VIRTUAL_PROMPT"
+                del env["_OLD_VIRTUAL_PROMPT"]
+            if "_OLD_VIRTUAL_PYTHONHOME" in env:
+                env["PYTHONHOME"] = "_OLD_VIRTUAL_PYTHONHOME"
+                del env["_OLD_VIRTUAL_PYTHONHOME"]
+            if "_OLD_VIRTUAL_PATH" in env:
+                env["PATH"] = "_OLD_VIRTUAL_PATH"
+                del env["_OLD_VIRTUAL_PATH"]
+        return env
+
     def _start(self):
+        env = self._get_env()
         self._process = subprocess.Popen([str(self._ipython_path), "--classic"],
                                          text=True,
                                          cwd=self._working_dir,
+                                         env=env,
                                          stdin=subprocess.PIPE,
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE)

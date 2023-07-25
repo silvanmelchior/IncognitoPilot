@@ -41,8 +41,18 @@ def test_script():
 
 def test_import():
     interpreter = IPythonInterpreter()
-    result = interpreter.run_cell("import numpy as np\nprint(np.array([1, 2, 3]))\n")
-    assert result == "[1 2 3]\n"
+    result = interpreter.run_cell("from fastapi import FastAPI\nFastAPI()")
+    assert "FastAPI object" in result
+
+
+def test_deactivate():
+    interpreter = IPythonInterpreter()
+    result = interpreter.run_cell("import os\nos.environ['VIRTUAL_ENV']")
+    assert "KeyError" not in result
+
+    interpreter = IPythonInterpreter(deactivate_venv=True)
+    result = interpreter.run_cell("import os\nos.environ['VIRTUAL_ENV']")
+    assert "KeyError" in result
 
 
 def test_session():

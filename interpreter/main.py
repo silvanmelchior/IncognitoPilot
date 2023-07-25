@@ -21,6 +21,8 @@ async def run(websocket: WebSocket):
     await websocket.accept()
     interpreter = IPythonInterpreter(
         working_dir=Path(os.environ["WORKING_DIRECTORY"]),
+        ipython_path=Path(os.environ["IPYTHON_PATH"]),
+        deactivate_venv=True,
         timeout=30
     )
 
