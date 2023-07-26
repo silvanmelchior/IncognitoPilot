@@ -34,7 +34,7 @@ export default function ChatInput(
         }}
         disabled={disabled}
         className="flex-1 focus:outline-0 disabled:bg-transparent"
-        placeholder={disabled ? "Working..." : "Type your message"}
+        placeholder={disabled ? "Please wait..." : "Type your message"}
       />
       <button
         onClick={onSend}

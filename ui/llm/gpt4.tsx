@@ -72,7 +72,7 @@ function msgToGPTMsg(msg: Message): GPTMessage {
       content: msg.code_result ?? ""
     }
   }
-  throw new LLMException(`Invalid message role: ${msg.role}`)
+  throw new LLMException(`Invalid message role ${msg.role}`)
 }
 
 function GPTMsgToMsg(msg: GPTMessage): Message {
@@ -103,7 +103,7 @@ function GPTMsgToMsg(msg: GPTMessage): Message {
       code_result: msg.content ?? ""
     }
   }
-  throw new LLMException(`Invalid message role: ${msg.role}`)
+  throw new LLMException(`Invalid message role ${msg.role}`)
 }
 
 export async function chat(history: Message[]): Promise<Message> {
@@ -123,7 +123,7 @@ export async function chat(history: Message[]): Promise<Message> {
       temperature: 0.0
     })
   } catch(e) {
-    throw new LLMException(`OpenAI API error: ${e.response.status} ${e.response.statusText}`)
+    throw new LLMException(`OpenAI API error ${e.response.status} ${e.response.statusText}`)
   }
   const message = completion.data.choices[0].message
 

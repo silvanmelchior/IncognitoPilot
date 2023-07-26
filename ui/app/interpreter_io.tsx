@@ -8,13 +8,15 @@ export default function InterpreterIO(
     content,
     askApprove,
     approver,
-    autoApprove
+    autoApprove,
+    disabled
   }: {
     title: string,
     content: string | null,
     askApprove: boolean,
     approver: Approver,
-    autoApprove: boolean
+    autoApprove: boolean,
+    disabled: boolean
   }) {
   return (
     <div className="h-full flex flex-col">
@@ -29,6 +31,7 @@ export default function InterpreterIO(
             type="checkbox"
             checked={autoApprove}
             onChange={e => approver.setAutoApprove(e.target.checked)}
+            disabled={disabled}
           />{' '}
           auto-approve
         </div>
@@ -36,7 +39,7 @@ export default function InterpreterIO(
           <button
             className="px-4 py-2 bg-red-600 disabled:bg-gray-100 text-white disabled:text-gray-300 rounded-md"
             onClick={approver.approve}
-            disabled={!askApprove}
+            disabled={!askApprove || disabled}
           >Approve</button>
         </div>
       </div>

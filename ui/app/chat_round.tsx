@@ -14,7 +14,7 @@ export class ChatRound {
     private readonly _approverOut: Approver,
     private readonly _interpreter: Interpreter,
     private readonly _setState: (state: ChatRoundState) => void,
-    private readonly _doneCallback: () => void
+    private readonly _setError: (message: string) => void
   ) {}
 
   private extendHistory(message: Message) {
@@ -23,44 +23,49 @@ export class ChatRound {
     this._history = newHistory
   }
 
-  start = (message: string) => {
+  trigger = async (message: string) => {
     this.extendHistory({ role: "user", text: message })
     this._setState("waiting for model")
-    chatCall(this._history).then(this.onModelMessage)
+    let msg: Message
+    try {
+      msg = await chatCall(this._history)
+    } catch(e) {
+      this._setError(e.message)
+      return
+    }
+    await this.onModelMessage(msg)
   }
 
-  private onModelMessage = (message: Message) => {
+  private onModelMessage = async (message: Message) => {
     this.extendHistory(message)
     if(message.code !== undefined) {
       this._setState("waiting for approval")
-      this._approverIn.getApproval(message.code).then(() => {
-        this.executeCode(message.code!)
-      })
+      await this._approverIn.getApproval(message.code)
+      await this.executeCode(message.code!)
     }
     else {
       this._setState("not active")
-      this._doneCallback()
+      // done
     }
   }
 
-  private executeCode = (code: string) => {
+  private executeCode = async (code: string) => {
     this._setState("waiting for interpreter")
-    this._interpreter.run(code).then(result => {
-      this._setState("waiting for approval")
-      const tmpAutoApprove = result === ""
-      const resultText = tmpAutoApprove ?
-        "(empty output was automatically approved)" : result
-      this._approverOut.getApproval(resultText, tmpAutoApprove).then(() => {
-        this.executeCodeDone(result)
-      })
-    })
+    const result = await this._interpreter.run(code)
+    this._setState("waiting for approval")
+    const tmpAutoApprove = result === ""
+    const resultText = tmpAutoApprove ?
+      "(empty output was automatically approved)" : result
+    await this._approverOut.getApproval(resultText, tmpAutoApprove)
+    await this.executeCodeDone(result)
   }
 
-  private executeCodeDone = (result: string) => {
+  private executeCodeDone = async (result: string) => {
     const newMessage: Message = { role: "interpreter", code_result: result }
     this.extendHistory(newMessage)
     this._setState("waiting for model")
-    chatCall(this._history).then(this.onModelMessage)
+    const msg = await chatCall(this._history)
+    await this.onModelMessage(msg)
   }
 
 }

@@ -12,6 +12,9 @@ import { ChatRound, ChatRoundState } from "@/app/chat_round";
 
 export default function Session() {
   const [history, setHistory] = React.useState<Message[]>([])
+
+  const [error, setError] = React.useState<string | null>(null)
+
   const [chatRoundState, setChatRoundState] = React.useState<ChatRoundState>("not active")
   const [approverInRef, code, askApproveIn, autoApproveIn] = useApprover()
   const [approverOutRef, result, askApproveOut, autoApproveOut] = useApprover()
@@ -36,22 +39,30 @@ export default function Session() {
       approverOutRef.current,
       interpreterRef.current!,
       setChatRoundState,
-      focusChatInput
+      setError
     )
-    chatRound.start(message)
+    chatRound.trigger(message).then(() => {
+      focusChatInput()
+    }).catch(() => {
+      setError("Could not connect to interpreter")
+    })
   }
 
-
   return (
-    <div className="flex gap-4 h-full bg-blue-50">
-      <div className="flex-1 flex flex-col px-4">
-        <div className="flex-1 h-0 overflow-y-auto">
+    <div className="flex h-full bg-blue-50">
+      <div className="flex-1 flex flex-col">
+        { error !== null && (
+          <div className="flex-0 bg-red-600 text-white font-bold p-4">
+            Error: {error}
+          </div>
+        )}
+        <div className="flex-1 h-0 overflow-y-auto px-8">
           <ChatHistory history={history} />
         </div>
-        <div className="flex-0">
+        <div className="flex-0 px-8">
           <ChatInput
             innerRef={chatInputRef}
-            disabled={chatRoundState !== "not active"}
+            disabled={chatRoundState !== "not active" || error !== null}
             onMessage={startChatRound}
           />
         </div>
@@ -65,6 +76,7 @@ export default function Session() {
               askApprove={askApproveIn}
               autoApprove={autoApproveIn}
               approver={approverInRef.current}
+              disabled={error !== null}
             />
           </div>
         </div>
@@ -76,6 +88,7 @@ export default function Session() {
               askApprove={askApproveOut}
               autoApprove={autoApproveOut}
               approver={approverOutRef.current}
+              disabled={error !== null}
             />
           </div>
         </div>
