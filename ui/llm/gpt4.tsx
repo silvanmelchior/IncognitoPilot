@@ -1,7 +1,12 @@
-import { Configuration, OpenAIApi } from "openai";
-import { Message } from "@/llm/base";
-import {ChatCompletionRequestMessage} from "openai/api";
+import { Configuration, CreateChatCompletionResponse, OpenAIApi } from "openai";
+import { ChatCompletionRequestMessage } from "openai/api";
+import { LLMException, Message } from "@/llm/base";
+import { AxiosResponse } from "axios";
 
+if(!process.env.OPENAI_API_KEY) {
+  console.error("ERROR: OpenAI API key not set, exiting...")
+  process.exit(1)
+}
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY
 });
@@ -67,7 +72,7 @@ function msgToGPTMsg(msg: Message): GPTMessage {
       content: msg.code_result ?? ""
     }
   }
-  throw new Error("Invalid message role")
+  throw new LLMException(`Invalid message role: ${msg.role}`)
 }
 
 function GPTMsgToMsg(msg: GPTMessage): Message {
@@ -78,12 +83,18 @@ function GPTMsgToMsg(msg: GPTMessage): Message {
     }
   }
   if(msg.role == "assistant") {
+    let code: string | undefined
+    try {
+      code = msg.function_call !== undefined ?
+        JSON.parse(msg.function_call.arguments).code :
+        undefined
+    } catch(e) {
+      throw new LLMException(`Model returned invalid JSON, cannot run code`)
+    }
     return {
       role: "model",
       text: msg.content !== null ? msg.content : undefined,
-      code: msg.function_call !== undefined ?
-        JSON.parse(msg.function_call.arguments).code :
-        undefined
+      code: code
     }
   }
   if(msg.role == "function") {
@@ -92,7 +103,7 @@ function GPTMsgToMsg(msg: GPTMessage): Message {
       code_result: msg.content ?? ""
     }
   }
-  throw new Error("Invalid message role")
+  throw new LLMException(`Invalid message role: ${msg.role}`)
 }
 
 export async function chat(history: Message[]): Promise<Message> {
@@ -102,14 +113,19 @@ export async function chat(history: Message[]): Promise<Message> {
     content: SYSTEM_MESSAGE
   })
 
-  const completion = await openai.createChatCompletion({
-    model: MODEL,
-    messages: gptHistory as ChatCompletionRequestMessage[],  // type in library is wrong
-    functions: FUNCTIONS,
-    function_call: "auto",
-    temperature: 0.0
-  })
+  let completion: AxiosResponse<CreateChatCompletionResponse, any>
+  try {
+    completion = await openai.createChatCompletion({
+      model: MODEL,
+      messages: gptHistory as ChatCompletionRequestMessage[],
+      functions: FUNCTIONS,
+      function_call: "auto",
+      temperature: 0.0
+    })
+  } catch(e) {
+    throw new LLMException(`OpenAI API error: ${e.response.status} ${e.response.statusText}`)
+  }
   const message = completion.data.choices[0].message
 
-  return GPTMsgToMsg(message)
+  return GPTMsgToMsg(message as GPTMessage)
 }

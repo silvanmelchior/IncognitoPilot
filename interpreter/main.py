@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -15,23 +16,37 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+TIMEOUT_MESSAGE = "ERROR: TIMEOUT REACHED"
+
+try:
+    WORKING_DIRECTORY = Path(os.environ["WORKING_DIRECTORY"])
+    IPYTHON_PATH = Path(os.environ["IPYTHON_PATH"])
+except KeyError:
+    print("ERROR: Missing environment variables, exiting...", file=sys.stderr)
+    sys.exit(1)
+
+
+def get_interpreter() -> IPythonInterpreter:
+    interpreter = IPythonInterpreter(
+        working_dir=WORKING_DIRECTORY,
+        ipython_path=IPYTHON_PATH,
+        deactivate_venv=True,
+        timeout=30
+    )
+    return interpreter
+
 
 @app.websocket("/run")
 async def run(websocket: WebSocket):
     await websocket.accept()
-    interpreter = IPythonInterpreter(
-        working_dir=Path(os.environ["WORKING_DIRECTORY"]),
-        ipython_path=Path(os.environ["IPYTHON_PATH"]),
-        deactivate_venv=True,
-        timeout=30
-    )
+    interpreter = get_interpreter()
 
     try:
         while True:
             script = await websocket.receive_text()
             result = interpreter.run_cell(script)
             if result is None:
-                result = "ERROR: TIMEOUT REACHED"
+                result = TIMEOUT_MESSAGE
             await websocket.send_text(result)
     except WebSocketDisconnect:
         pass
