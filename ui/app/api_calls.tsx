@@ -26,16 +26,20 @@ export class Interpreter {
         resolve()
       }
       this._ws!.onerror = (event) => {
-        reject(event)
+        reject(Error("Could not connect to interpreter"))
       }
     })
   }
 
   private send(code: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      this._ws!.send(code)
-      this._ws!.onmessage = (event) => {
-        resolve(event.data);
+      if(this._ws!.readyState === WebSocket.OPEN) {
+        this._ws!.send(code)
+        this._ws!.onmessage = (event) => {
+          resolve(event.data);
+        }
+      } else {
+        reject(Error("Could not connect to interpreter"))
       }
     })
   }

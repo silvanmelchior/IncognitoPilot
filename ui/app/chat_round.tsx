@@ -1,6 +1,6 @@
-import { Message } from "@/llm/base";
-import { chatCall, Interpreter } from "@/app/api_calls";
-import { Approver } from "@/app/approver";
+import {Message} from "@/llm/base";
+import {chatCall, Interpreter} from "@/app/api_calls";
+import {Approver} from "@/app/approver";
 
 
 export type ChatRoundState = "not active" | "waiting for model" |
@@ -14,7 +14,6 @@ export class ChatRound {
     private readonly _approverOut: Approver,
     private readonly _interpreter: Interpreter,
     private readonly _setState: (state: ChatRoundState) => void,
-    private readonly _setError: (message: string) => void
   ) {}
 
   private extendHistory(message: Message) {
@@ -23,25 +22,27 @@ export class ChatRound {
     this._history = newHistory
   }
 
-  trigger = async (message: string) => {
-    this.extendHistory({ role: "user", text: message })
+  private sendMessage = async (message: Message): Promise<Message> => {
+    this.extendHistory(message)
     this._setState("waiting for model")
-    let msg: Message
-    try {
-      msg = await chatCall(this._history)
-    } catch(e) {
-      this._setError(e.message)
-      return
-    }
-    await this.onModelMessage(msg)
+    const response = await chatCall(this._history)
+    this.extendHistory(response)
+    return response
   }
 
-  private onModelMessage = async (message: Message) => {
-    this.extendHistory(message)
+  start = async (message: string) => {
+    const newMessage: Message = { role: "user", text: message }
+    const response = await this.sendMessage(newMessage)
+    await this.handleModelResponse(response)
+  }
+
+  private handleModelResponse = async (message: Message) => {
     if(message.code !== undefined) {
-      this._setState("waiting for approval")
-      await this._approverIn.getApproval(message.code)
-      await this.executeCode(message.code!)
+      await this.approveIn(message.code)
+      const result = await this.executeCode(message.code!)
+      await this.approveOut(result)
+      const response = await this.executeCodeDone(result)
+      await this.handleModelResponse(response)
     }
     else {
       this._setState("not active")
@@ -49,23 +50,27 @@ export class ChatRound {
     }
   }
 
-  private executeCode = async (code: string) => {
+  private approveIn = async (code: string) => {
+    this._setState("waiting for approval")
+    await this._approverIn.getApproval(code)
+  }
+
+  private executeCode = async (code: string): Promise<string> => {
     this._setState("waiting for interpreter")
-    const result = await this._interpreter.run(code)
+    return await this._interpreter.run(code)
+  }
+
+  private approveOut = async (result: string) => {
     this._setState("waiting for approval")
     const tmpAutoApprove = result === ""
     const resultText = tmpAutoApprove ?
       "(empty output was automatically approved)" : result
     await this._approverOut.getApproval(resultText, tmpAutoApprove)
-    await this.executeCodeDone(result)
   }
 
   private executeCodeDone = async (result: string) => {
     const newMessage: Message = { role: "interpreter", code_result: result }
-    this.extendHistory(newMessage)
-    this._setState("waiting for model")
-    const msg = await chatCall(this._history)
-    await this.onModelMessage(msg)
+    return await this.sendMessage(newMessage)
   }
 
 }

@@ -38,13 +38,10 @@ export default function Session() {
       approverInRef.current,
       approverOutRef.current,
       interpreterRef.current!,
-      setChatRoundState,
-      setError
+      setChatRoundState
     )
-    chatRound.trigger(message).then(() => {
-      focusChatInput()
-    }).catch(() => {
-      setError("Could not connect to interpreter")
+    chatRound.start(message).then(focusChatInput).catch((e) => {
+      setError(e.message)
     })
   }
 
