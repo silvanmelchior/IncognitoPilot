@@ -11,7 +11,7 @@ export default function ChatHistory({history}: {history: Message[]}) {
     )
   }
   return (
-    <div>
+    <div className="mt-auto">
       {history.filter(msg => msg.role === "user" || (msg.role === "model" && msg.text !== undefined)).map((msg, idx) => (
         <div key={idx} className="flex mt-4">
           {msg.role === "model" ? (

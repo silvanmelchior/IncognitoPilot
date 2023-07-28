@@ -1,7 +1,7 @@
 import React from "react"
-import Session from "@/app/session";
+import SessionManager from "@/app/session-manager";
 
 
 export default function Home() {
-  return <Session />
+  return <SessionManager />
 }

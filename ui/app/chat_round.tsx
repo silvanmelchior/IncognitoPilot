@@ -30,26 +30,24 @@ export class ChatRound {
     return response
   }
 
-  start = async (message: string) => {
-    const newMessage: Message = { role: "user", text: message }
-    const response = await this.sendMessage(newMessage)
-    await this.handleModelResponse(response, 0)
-  }
-
-  private handleModelResponse = async (message: Message, round: number) => {
-    if(round > 10) {
+  run = async (message: string) => {
+    let response = await this.sendMessage({ role: "user", text: message })
+    let round = 0
+    for(; round < 10; round++) {
+      const code = response.code
+      if(code !== undefined) {
+        await this.approveIn(code)
+        const result = await this.executeCode(code)
+        await this.approveOut(result)
+        response = await this.sendResult(result)
+      }
+      else {
+        this._setState("not active")
+        break
+      }
+    }
+    if(round == 10) {
       throw new Error("Stopped after 10 rounds")
-    }
-    if(message.code !== undefined) {
-      await this.approveIn(message.code)
-      const result = await this.executeCode(message.code!)
-      await this.approveOut(result)
-      const response = await this.executeCodeDone(result)
-      await this.handleModelResponse(response, round + 1)
-    }
-    else {
-      this._setState("not active")
-      // done
     }
   }
 
@@ -71,7 +69,7 @@ export class ChatRound {
     await this._approverOut.getApproval(resultText, tmpAutoApprove)
   }
 
-  private executeCodeDone = async (result: string) => {
+  private sendResult = async (result: string) => {
     const newMessage: Message = { role: "interpreter", code_result: result }
     return await this.sendMessage(newMessage)
   }

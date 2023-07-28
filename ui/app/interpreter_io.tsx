@@ -37,7 +37,7 @@ export default function InterpreterIO(
         </div>
         <div className="flex-0 ml-4">
           <button
-            className="px-4 py-2 bg-red-600 disabled:bg-gray-100 text-white disabled:text-gray-300 rounded-md"
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-100 text-white disabled:text-gray-300 rounded-md"
             onClick={approver.approve}
             disabled={!askApprove || disabled}
           >Approve</button>

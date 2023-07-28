@@ -8,9 +8,10 @@ import InterpreterIO from "@/app/interpreter_io";
 import { Interpreter } from "@/app/api_calls";
 import { useApprover } from "@/app/approver";
 import { ChatRound, ChatRoundState } from "@/app/chat_round";
+import { Header } from "@/app/header";
 
 
-export default function Session() {
+export default function Session({refreshSession }: { refreshSession: () => void }) {
   const [history, setHistory] = React.useState<Message[]>([])
 
   const [error, setError] = React.useState<string | null>(null)
@@ -40,7 +41,7 @@ export default function Session() {
       interpreterRef.current!,
       setChatRoundState
     )
-    chatRound.start(message).then(focusChatInput).catch((e) => {
+    chatRound.run(message).then(focusChatInput).catch((e) => {
       setError(e.message)
     })
   }
@@ -48,13 +49,13 @@ export default function Session() {
   return (
     <div className="flex h-full bg-blue-50">
       <div className="flex-1 flex flex-col">
-        { error !== null && (
-          <div className="flex-0 bg-red-600 text-white font-bold p-4">
-            Error: {error}
-          </div>
-        )}
-        <div className="flex-1 h-0 overflow-y-auto px-8">
-          <ChatHistory history={history} />
+        <Header
+          error={error}
+          onNew={refreshSession}
+          showNew={history.length > 0}
+        />
+        <div className="flex-1 h-0 overflow-y-auto px-8 flex flex-col">
+          <ChatHistory history={history}/>
         </div>
         <div className="flex-0 px-8">
           <ChatInput
