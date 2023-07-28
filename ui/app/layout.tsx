@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Incognito Pilot',
-  description: 'Your local LLM code interpreter.'
+  description: 'Your local AI code interpreter.'
 }
 
 export default function RootLayout({

@@ -9,6 +9,7 @@ import { Interpreter } from "@/app/api_calls";
 import { useApprover } from "@/app/approver";
 import { ChatRound, ChatRoundState } from "@/app/chat_round";
 import { Header } from "@/app/header";
+import Brand from "@/app/brand";
 
 
 export default function Session({refreshSession }: { refreshSession: () => void }) {
@@ -55,9 +56,13 @@ export default function Session({refreshSession }: { refreshSession: () => void 
           showNew={history.length > 0}
         />
         <div className="flex-1 h-0 overflow-y-auto px-8 flex flex-col">
-          <ChatHistory history={history}/>
+          {history.length === 0 ? (
+            <Brand />
+          ) : (
+            <ChatHistory history={history}/>
+          )}
         </div>
-        <div className="flex-0 px-8">
+        <div className="px-8">
           <ChatInput
             innerRef={chatInputRef}
             disabled={chatRoundState !== "not active" || error !== null}

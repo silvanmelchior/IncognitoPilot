@@ -20,12 +20,12 @@ export default function InterpreterIO(
   }) {
   return (
     <div className="h-full flex flex-col">
-      <div className="flex-0 text-xl mt-2">{title}</div>
+      <div className="text-xl mt-2">{title}</div>
       <div className="flex-1 bg-neutral-50 whitespace-pre overflow-auto h-0 font-mono mt-2 p-2">
         {content}
       </div>
-      <div className="flex-0 flex justify-end items-center my-2">
-        <div className="flex-0">
+      <div className="flex justify-end items-center my-2">
+        <div>
           <input
             className="align-middle accent-red-600"
             type="checkbox"
@@ -35,7 +35,7 @@ export default function InterpreterIO(
           />{' '}
           auto-approve
         </div>
-        <div className="flex-0 ml-4">
+        <div className="ml-4">
           <button
             className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-100 text-white disabled:text-gray-300 rounded-md"
             onClick={approver.approve}

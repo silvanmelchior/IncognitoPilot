@@ -36,11 +36,7 @@ export default function ChatInput(
         className="flex-1 focus:outline-0 disabled:bg-transparent"
         placeholder={disabled ? "Please wait..." : "Type your message"}
       />
-      <button
-        onClick={onSend}
-        disabled={!canSend}
-        className="flex-0"
-      >
+      <button onClick={onSend} disabled={!canSend}>
         <BiSend size={24} color={canSend ? "black" : "#aaa"} />
       </button>
     </div>
