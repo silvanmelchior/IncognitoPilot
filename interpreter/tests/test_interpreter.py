@@ -74,8 +74,9 @@ def test_timeout():
 
 def test_timeout_output():
     interpreter = IPythonInterpreter(timeout=1)
-    result = interpreter.run_cell("import time\nfor i in range(30):\n"
-                                  "    print(i)\n    time.sleep(0.1)\n")
+    result = interpreter.run_cell(
+        "import time\nfor i in range(30):\n" "    print(i)\n    time.sleep(0.1)\n"
+    )
     assert result is None
 
 

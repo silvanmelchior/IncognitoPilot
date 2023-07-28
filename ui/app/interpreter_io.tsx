@@ -1,23 +1,21 @@
 import React from "react";
 import { Approver } from "@/app/approver";
 
-
-export default function InterpreterIO(
-  {
-    title,
-    content,
-    askApprove,
-    approver,
-    autoApprove,
-    disabled
-  }: {
-    title: string,
-    content: string | null,
-    askApprove: boolean,
-    approver: Approver,
-    autoApprove: boolean,
-    disabled: boolean
-  }) {
+export default function InterpreterIO({
+  title,
+  content,
+  askApprove,
+  approver,
+  autoApprove,
+  disabled,
+}: {
+  title: string;
+  content: string | null;
+  askApprove: boolean;
+  approver: Approver;
+  autoApprove: boolean;
+  disabled: boolean;
+}) {
   return (
     <div className="h-full flex flex-col">
       <div className="text-xl mt-2">{title}</div>
@@ -30,9 +28,9 @@ export default function InterpreterIO(
             className="align-middle accent-red-600"
             type="checkbox"
             checked={autoApprove}
-            onChange={e => approver.setAutoApprove(e.target.checked)}
+            onChange={(e) => approver.setAutoApprove(e.target.checked)}
             disabled={disabled}
-          />{' '}
+          />{" "}
           auto-approve
         </div>
         <div className="ml-4">
@@ -40,9 +38,11 @@ export default function InterpreterIO(
             className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-100 text-white disabled:text-gray-300 rounded-md"
             onClick={approver.approve}
             disabled={!askApprove || disabled}
-          >Approve</button>
+          >
+            Approve
+          </button>
         </div>
       </div>
     </div>
-  )
+  );
 }

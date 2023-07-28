@@ -15,6 +15,7 @@ websockets = "^11.0.3"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
 ipython = "^8.14.0"
+black = {extras = ["d"], version = "^23.7.0"}
 
 [build-system]
 requires = ["poetry-core"]

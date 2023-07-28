@@ -31,7 +31,7 @@ def get_interpreter() -> IPythonInterpreter:
         working_dir=WORKING_DIRECTORY,
         ipython_path=IPYTHON_PATH,
         deactivate_venv=True,
-        timeout=30
+        timeout=30,
     )
     return interpreter
 
@@ -42,7 +42,6 @@ async def run(websocket: WebSocket):
     try:
         interpreter = get_interpreter()
     except Exception as e:
-        print(type(e))
         await websocket.send_text(str(e))
         return
     await websocket.send_text("_ready_")

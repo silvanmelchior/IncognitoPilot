@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React from "react";
 import { Message } from "@/llm/base";
@@ -11,27 +11,31 @@ import { ChatRound, ChatRoundState } from "@/app/chat_round";
 import { Header } from "@/app/header";
 import Brand from "@/app/brand";
 
+export default function Session({
+  refreshSession,
+}: {
+  refreshSession: () => void;
+}) {
+  const [history, setHistory] = React.useState<Message[]>([]);
 
-export default function Session({refreshSession }: { refreshSession: () => void }) {
-  const [history, setHistory] = React.useState<Message[]>([])
+  const [error, setError] = React.useState<string | null>(null);
 
-  const [error, setError] = React.useState<string | null>(null)
-
-  const [chatRoundState, setChatRoundState] = React.useState<ChatRoundState>("not active")
-  const [approverInRef, code, askApproveIn, autoApproveIn] = useApprover()
-  const [approverOutRef, result, askApproveOut, autoApproveOut] = useApprover()
+  const [chatRoundState, setChatRoundState] =
+    React.useState<ChatRoundState>("not active");
+  const [approverInRef, code, askApproveIn, autoApproveIn] = useApprover();
+  const [approverOutRef, result, askApproveOut, autoApproveOut] = useApprover();
 
   const chatInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const interpreterRef = React.useRef<Interpreter | null>(null);
-  if(interpreterRef.current === null) {
-    interpreterRef.current = new Interpreter()
+  if (interpreterRef.current === null) {
+    interpreterRef.current = new Interpreter();
   }
 
   const focusChatInput = () => {
-    setTimeout(() => chatInputRef.current && chatInputRef.current.focus(), 100)
-  }
-  React.useEffect(focusChatInput, [])
+    setTimeout(() => chatInputRef.current && chatInputRef.current.focus(), 100);
+  };
+  React.useEffect(focusChatInput, []);
 
   const startChatRound = (message: string) => {
     const chatRound = new ChatRound(
@@ -40,12 +44,15 @@ export default function Session({refreshSession }: { refreshSession: () => void 
       approverInRef.current,
       approverOutRef.current,
       interpreterRef.current!,
-      setChatRoundState
-    )
-    chatRound.run(message).then(focusChatInput).catch((e) => {
-      setError(e.message)
-    })
-  }
+      setChatRoundState,
+    );
+    chatRound
+      .run(message)
+      .then(focusChatInput)
+      .catch((e) => {
+        setError(e.message);
+      });
+  };
 
   return (
     <div className="flex h-full bg-blue-50">
@@ -56,11 +63,7 @@ export default function Session({refreshSession }: { refreshSession: () => void 
           showNew={history.length > 0}
         />
         <div className="flex-1 h-0 overflow-y-auto px-8 flex flex-col">
-          {history.length === 0 ? (
-            <Brand />
-          ) : (
-            <ChatHistory history={history}/>
-          )}
+          {history.length === 0 ? <Brand /> : <ChatHistory history={history} />}
         </div>
         <div className="px-8">
           <ChatInput
@@ -97,5 +100,5 @@ export default function Session({refreshSession }: { refreshSession: () => void 
         </div>
       </div>
     </div>
-  )
+  );
 }

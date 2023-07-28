@@ -14,11 +14,17 @@ class IPythonInterpreter:
     _INTERPRETER_PROMPT = ">>> "
     _LAST_VAR = "_INTERPRETER_last_val"
 
-    def __init__(self, *, working_dir: Path = None, ipython_path: Path = None,
-                 timeout: int = None, deactivate_venv: bool = False):
+    def __init__(
+        self,
+        *,
+        working_dir: Path = None,
+        ipython_path: Path = None,
+        timeout: int = None,
+        deactivate_venv: bool = False,
+    ):
         self._working_dir = working_dir
         if ipython_path is None:
-            self._ipython_path = Path(sys.executable).parent / 'ipython.exe'
+            self._ipython_path = Path(sys.executable).parent / "ipython.exe"
         else:
             self._ipython_path = ipython_path
         self._timeout = timeout
@@ -47,13 +53,15 @@ class IPythonInterpreter:
     def _start(self):
         env = self._get_env()
         try:
-            self._process = subprocess.Popen([str(self._ipython_path), "--classic"],
-                                             text=True,
-                                             cwd=self._working_dir,
-                                             env=env,
-                                             stdin=subprocess.PIPE,
-                                             stdout=subprocess.PIPE,
-                                             stderr=subprocess.PIPE)
+            self._process = subprocess.Popen(
+                [str(self._ipython_path), "--classic"],
+                text=True,
+                cwd=self._working_dir,
+                env=env,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
         except FileNotFoundError:
             raise RuntimeError(f"Could not find ipython at the specified path")
         except NotADirectoryError:
@@ -63,15 +71,19 @@ class IPythonInterpreter:
         self._stop_threads = False
 
         self._q_stdout = queue.Queue()
-        self._t_stdout = threading.Thread(target=self._reader_thread,
-                                          args=(self._process.stdout, self._q_stdout),
-                                          daemon=True)
+        self._t_stdout = threading.Thread(
+            target=self._reader_thread,
+            args=(self._process.stdout, self._q_stdout),
+            daemon=True,
+        )
         self._t_stdout.start()
 
         self._q_stderr = queue.Queue()
-        self._t_stderr = threading.Thread(target=self._reader_thread,
-                                          args=(self._process.stderr, self._q_stderr),
-                                          daemon=True)
+        self._t_stderr = threading.Thread(
+            target=self._reader_thread,
+            args=(self._process.stderr, self._q_stderr),
+            daemon=True,
+        )
         self._t_stderr.start()
 
         self._wait_till_started()
@@ -107,7 +119,7 @@ class IPythonInterpreter:
                 break
             stdout += line
 
-        return stdout[len(self._INTERPRETER_PROMPT):]
+        return stdout[len(self._INTERPRETER_PROMPT) :]
 
     def _read_stderr(self) -> str:
         stderr = ""
