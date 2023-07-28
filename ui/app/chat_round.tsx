@@ -33,16 +33,19 @@ export class ChatRound {
   start = async (message: string) => {
     const newMessage: Message = { role: "user", text: message }
     const response = await this.sendMessage(newMessage)
-    await this.handleModelResponse(response)
+    await this.handleModelResponse(response, 0)
   }
 
-  private handleModelResponse = async (message: Message) => {
+  private handleModelResponse = async (message: Message, round: number) => {
+    if(round > 10) {
+      throw new Error("Stopped after 10 rounds")
+    }
     if(message.code !== undefined) {
       await this.approveIn(message.code)
       const result = await this.executeCode(message.code!)
       await this.approveOut(result)
       const response = await this.executeCodeDone(result)
-      await this.handleModelResponse(response)
+      await this.handleModelResponse(response, round + 1)
     }
     else {
       this._setState("not active")
