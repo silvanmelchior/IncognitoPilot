@@ -39,15 +39,25 @@ def get_interpreter() -> IPythonInterpreter:
 @app.websocket("/run")
 async def run(websocket: WebSocket):
     await websocket.accept()
-    interpreter = get_interpreter()
+    try:
+        interpreter = get_interpreter()
+    except Exception as e:
+        print(type(e))
+        await websocket.send_text(str(e))
+        return
+    await websocket.send_text("_ready_")
 
     try:
         while True:
             script = await websocket.receive_text()
-            result = interpreter.run_cell(script)
-            if result is None:
-                result = TIMEOUT_MESSAGE
-            await websocket.send_text(result)
+            try:
+                result = interpreter.run_cell(script)
+                if result is None:
+                    result = TIMEOUT_MESSAGE
+                response = f"_success_ {result}"
+            except Exception as e:
+                response = f"_error_ {e}"
+            await websocket.send_text(response)
     except WebSocketDisconnect:
         pass
 

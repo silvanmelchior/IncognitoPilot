@@ -22,8 +22,12 @@ export class Interpreter {
   private connect(): Promise<void> {
     this._ws = new WebSocket(`ws://${process.env.NEXT_PUBLIC_INTERPRETER_URL}/run`);
     return new Promise((resolve, reject) => {
-      this._ws!.onopen = () => {
-        resolve()
+      this._ws!.onmessage = (event) => {
+        if(event.data === "_ready_") {
+          resolve()
+        } else {
+          reject(Error(event.data))
+        }
       }
       this._ws!.onerror = (event) => {
         reject(Error("Could not connect to interpreter"))
@@ -36,7 +40,13 @@ export class Interpreter {
       if(this._ws!.readyState === WebSocket.OPEN) {
         this._ws!.send(code)
         this._ws!.onmessage = (event) => {
-          resolve(event.data);
+          if(event.data.startsWith("_success_")) {
+            resolve(event.data.substring(10));
+          } else if(event.data.startsWith("_error_")) {
+            reject(Error(event.data.substring(8)))
+          } else {
+            reject(Error("Invalid response"))
+          }
         }
       } else {
         reject(Error("Could not connect to interpreter"))

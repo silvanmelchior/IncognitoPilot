@@ -46,13 +46,18 @@ class IPythonInterpreter:
 
     def _start(self):
         env = self._get_env()
-        self._process = subprocess.Popen([str(self._ipython_path), "--classic"],
-                                         text=True,
-                                         cwd=self._working_dir,
-                                         env=env,
-                                         stdin=subprocess.PIPE,
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE)
+        try:
+            self._process = subprocess.Popen([str(self._ipython_path), "--classic"],
+                                             text=True,
+                                             cwd=self._working_dir,
+                                             env=env,
+                                             stdin=subprocess.PIPE,
+                                             stdout=subprocess.PIPE,
+                                             stderr=subprocess.PIPE)
+        except FileNotFoundError:
+            raise RuntimeError(f"Could not find ipython at the specified path")
+        except NotADirectoryError:
+            raise RuntimeError(f"Working directory does not exist")
         self._p_stdin = self._process.stdin
 
         self._stop_threads = False
