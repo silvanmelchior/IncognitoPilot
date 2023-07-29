@@ -8,7 +8,6 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-const MODEL = "gpt-4";
 const SYSTEM_MESSAGE = "You are a helpful coding assistant.";
 const FUNCTIONS = [
   {
@@ -106,36 +105,38 @@ function GPTMsgToMsg(msg: GPTMessage): Message {
   throw new LLMException(`Invalid message role ${msg.role}`);
 }
 
-export async function chat(history: Message[]): Promise<Message> {
-  if (OPENAI_API_KEY === undefined) {
-    throw new LLMException("OPENAI_API_KEY environment variable not set");
-  }
-
-  const gptHistory = history.map(msgToGPTMsg);
-  gptHistory.unshift({
-    role: "system",
-    content: SYSTEM_MESSAGE,
-  });
-
-  let completion: AxiosResponse<CreateChatCompletionResponse, any>;
-  try {
-    // type definitions of openai seem to be wrong, so had to disable multiple times
-    completion = (await openai.createChatCompletion({
-      model: MODEL,
-      messages: gptHistory as any,
-      functions: FUNCTIONS,
-      function_call: "auto",
-      temperature: 0.0,
-    })) as any;
-  } catch (e: any) {
-    if (e.response !== undefined) {
-      throw new LLMException(
-        `OpenAI API error ${e.response.status} ${e.response.statusText}`,
-      );
+export const chat =
+  (model: string) =>
+  async (history: Message[]): Promise<Message> => {
+    if (OPENAI_API_KEY === undefined) {
+      throw new LLMException("OPENAI_API_KEY environment variable not set");
     }
-    throw e;
-  }
-  const message = completion.data.choices[0].message as GPTMessage;
 
-  return GPTMsgToMsg(message);
-}
+    const gptHistory = history.map(msgToGPTMsg);
+    gptHistory.unshift({
+      role: "system",
+      content: SYSTEM_MESSAGE,
+    });
+
+    let completion: AxiosResponse<CreateChatCompletionResponse, any>;
+    try {
+      // type definitions of openai seem to be wrong, so had to disable multiple times
+      completion = (await openai.createChatCompletion({
+        model: model,
+        messages: gptHistory as any,
+        functions: FUNCTIONS,
+        function_call: "auto",
+        temperature: 0.0,
+      })) as any;
+    } catch (e: any) {
+      if (e.response !== undefined) {
+        throw new LLMException(
+          `OpenAI API error ${e.response.status} ${e.response.statusText}`,
+        );
+      }
+      throw e;
+    }
+    const message = completion.data.choices[0].message as GPTMessage;
+
+    return GPTMsgToMsg(message);
+  };
