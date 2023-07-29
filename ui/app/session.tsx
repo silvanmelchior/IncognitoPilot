@@ -10,8 +10,10 @@ import { Header } from "@/app/header";
 import Brand from "@/app/brand";
 
 export default function Session({
+  interpreterUrl,
   refreshSession,
 }: {
+  interpreterUrl: string;
   refreshSession: () => void;
 }) {
   const [history, setHistory] = React.useState<Message[]>([]);
@@ -27,7 +29,7 @@ export default function Session({
 
   const interpreterRef = React.useRef<Interpreter | null>(null);
   if (interpreterRef.current === null) {
-    interpreterRef.current = new Interpreter();
+    interpreterRef.current = new Interpreter(interpreterUrl);
   }
 
   const focusChatInput = () => {

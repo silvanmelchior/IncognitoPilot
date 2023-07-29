@@ -1,4 +1,5 @@
-FROM silvanmelchior/interpreter-venv-slim:0.1.0
+ARG INTERPRETER_IMAGE
+FROM $INTERPRETER_IMAGE
 SHELL ["/bin/bash", "-c"]
 
 RUN apt update && apt install -y nodejs npm
@@ -11,7 +12,6 @@ RUN python3 -m venv venv_backend && \
     pip3 install ./interpreter
 
 COPY ui ui
-ARG NEXT_PUBLIC_INTERPRETER_URL="localhost:3031"
 RUN cd ui && \
     npm install && \
     npm run build && \

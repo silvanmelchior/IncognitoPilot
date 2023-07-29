@@ -17,24 +17,21 @@ export async function chatCall(messages: Message[]): Promise<Message> {
 }
 
 export class Interpreter {
-  private _ws: WebSocket | null = null;
+  private ws: WebSocket | null = null;
+
+  constructor(private readonly interpreterUrl: string) {}
 
   private connect(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const interpreterUrl = process.env.NEXT_PUBLIC_INTERPRETER_URL;
-      if (interpreterUrl === undefined) {
-        reject(Error("NEXT_PUBLIC_INTERPRETER_URL not set"));
-        return;
-      }
-      this._ws = new WebSocket(`ws://${interpreterUrl}/run`);
-      this._ws!.onmessage = (event) => {
+      this.ws = new WebSocket(`ws://${this.interpreterUrl}/run`);
+      this.ws!.onmessage = (event) => {
         if (event.data === "_ready_") {
           resolve();
         } else {
           reject(Error(event.data));
         }
       };
-      this._ws!.onerror = (event) => {
+      this.ws!.onerror = (event) => {
         reject(Error("Could not connect to interpreter"));
       };
     });
@@ -42,9 +39,9 @@ export class Interpreter {
 
   private send(code: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      if (this._ws!.readyState === WebSocket.OPEN) {
-        this._ws!.send(code);
-        this._ws!.onmessage = (event) => {
+      if (this.ws!.readyState === WebSocket.OPEN) {
+        this.ws!.send(code);
+        this.ws!.onmessage = (event) => {
           if (event.data.startsWith("_success_")) {
             resolve(event.data.substring(10));
           } else if (event.data.startsWith("_error_")) {
@@ -60,7 +57,7 @@ export class Interpreter {
   }
 
   async run(code: string): Promise<string> {
-    if (this._ws === null) {
+    if (this.ws === null) {
       await this.connect();
     }
     return await this.send(code);
