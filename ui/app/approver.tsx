@@ -1,7 +1,7 @@
 import React from "react";
 
 export class Approver {
-  private _resolveHandler: (value: void) => void | null = null;
+  private _resolveHandler: ((value: void) => void) | null = null;
 
   constructor(
     private readonly _setContent: (content: string) => void,
@@ -39,12 +39,12 @@ export class Approver {
   };
 }
 
-export function useApprover() {
+export function useApprover(): [Approver, string | null, boolean, boolean] {
   const [content, setContent] = React.useState<string | null>(null);
   const [askApprove, setAskApprove] = React.useState<boolean>(false);
   const [autoApprove, setAutoApprove] = React.useState<boolean>(false);
   const approverRef = React.useRef(
     new Approver(setContent, autoApprove, setAutoApprove, setAskApprove),
   );
-  return [approverRef, content, askApprove, autoApprove];
+  return [approverRef.current, content, askApprove, autoApprove];
 }

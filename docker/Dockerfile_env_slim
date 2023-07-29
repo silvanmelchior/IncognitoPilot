@@ -1,0 +1,10 @@
+FROM python:3.9.17-slim-bookworm
+SHELL ["/bin/bash", "-c"] 
+
+WORKDIR /opt/app
+
+COPY docker/requirements_slim.txt requirements.txt
+
+RUN python3 -m venv venv_interpreter && \
+    source venv_interpreter/bin/activate && \
+    pip3 install -r requirements.txt

@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { Message } from "@/llm/base";
 import ChatInput from "@/app/chat_input";
@@ -22,8 +20,8 @@ export default function Session({
 
   const [chatRoundState, setChatRoundState] =
     React.useState<ChatRoundState>("not active");
-  const [approverInRef, code, askApproveIn, autoApproveIn] = useApprover();
-  const [approverOutRef, result, askApproveOut, autoApproveOut] = useApprover();
+  const [approverIn, code, askApproveIn, autoApproveIn] = useApprover();
+  const [approverOut, result, askApproveOut, autoApproveOut] = useApprover();
 
   const chatInputRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -41,8 +39,8 @@ export default function Session({
     const chatRound = new ChatRound(
       history,
       setHistory,
-      approverInRef.current,
-      approverOutRef.current,
+      approverIn,
+      approverOut,
       interpreterRef.current!,
       setChatRoundState,
     );
@@ -81,7 +79,7 @@ export default function Session({
               content={code}
               askApprove={askApproveIn}
               autoApprove={autoApproveIn}
-              approver={approverInRef.current}
+              approver={approverIn}
               disabled={error !== null}
             />
           </div>
@@ -93,7 +91,7 @@ export default function Session({
               content={result}
               askApprove={askApproveOut}
               autoApprove={autoApproveOut}
-              approver={approverOutRef.current}
+              approver={approverOut}
               disabled={error !== null}
             />
           </div>

@@ -7,7 +7,7 @@ license = "MIT"
 packages = [{include = "interpreter"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.9"
 fastapi = "^0.100.0"
 uvicorn = "^0.23.0"
 websockets = "^11.0.3"

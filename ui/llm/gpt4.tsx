@@ -1,14 +1,10 @@
 import { Configuration, CreateChatCompletionResponse, OpenAIApi } from "openai";
-import { ChatCompletionRequestMessage } from "openai/api";
 import { LLMException, Message } from "@/llm/base";
 import { AxiosResponse } from "axios";
 
-if (!process.env.OPENAI_API_KEY) {
-  console.error("ERROR: OpenAI API key not set, exiting...");
-  process.exit(1);
-}
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
@@ -111,6 +107,10 @@ function GPTMsgToMsg(msg: GPTMessage): Message {
 }
 
 export async function chat(history: Message[]): Promise<Message> {
+  if (OPENAI_API_KEY === undefined) {
+    throw new LLMException("OPENAI_API_KEY environment variable not set");
+  }
+
   const gptHistory = history.map(msgToGPTMsg);
   gptHistory.unshift({
     role: "system",
@@ -119,19 +119,23 @@ export async function chat(history: Message[]): Promise<Message> {
 
   let completion: AxiosResponse<CreateChatCompletionResponse, any>;
   try {
-    completion = await openai.createChatCompletion({
+    // type definitions of openai seem to be wrong, so had to disable multiple times
+    completion = (await openai.createChatCompletion({
       model: MODEL,
-      messages: gptHistory as ChatCompletionRequestMessage[],
+      messages: gptHistory as any,
       functions: FUNCTIONS,
       function_call: "auto",
       temperature: 0.0,
-    });
-  } catch (e) {
-    throw new LLMException(
-      `OpenAI API error ${e.response.status} ${e.response.statusText}`,
-    );
+    })) as any;
+  } catch (e: any) {
+    if (e.response !== undefined) {
+      throw new LLMException(
+        `OpenAI API error ${e.response.status} ${e.response.statusText}`,
+      );
+    }
+    throw e;
   }
-  const message = completion.data.choices[0].message;
+  const message = completion.data.choices[0].message as GPTMessage;
 
-  return GPTMsgToMsg(message as GPTMessage);
+  return GPTMsgToMsg(message);
 }

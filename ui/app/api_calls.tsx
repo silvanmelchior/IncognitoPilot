@@ -12,7 +12,7 @@ export async function chatCall(messages: Message[]): Promise<Message> {
         throw new Error(msg);
       }
     }
-    throw new Error(e.message);
+    throw e;
   }
 }
 
@@ -20,10 +20,13 @@ export class Interpreter {
   private _ws: WebSocket | null = null;
 
   private connect(): Promise<void> {
-    this._ws = new WebSocket(
-      `ws://${process.env.NEXT_PUBLIC_INTERPRETER_URL}/run`,
-    );
     return new Promise((resolve, reject) => {
+      const interpreterUrl = process.env.NEXT_PUBLIC_INTERPRETER_URL;
+      if (interpreterUrl === undefined) {
+        reject(Error("NEXT_PUBLIC_INTERPRETER_URL not set"));
+        return;
+      }
+      this._ws = new WebSocket(`ws://${interpreterUrl}/run`);
       this._ws!.onmessage = (event) => {
         if (event.data === "_ready_") {
           resolve();
