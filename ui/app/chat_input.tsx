@@ -22,7 +22,7 @@ export default function ChatInput({
   };
 
   return (
-    <div className="flex gap-2 bg-white drop-shadow-sm border border-neutral-300 rounded-md p-4 my-8 mx-8 focus-within:border-neutral-500">
+    <div className="flex gap-2 bg-white drop-shadow-sm border border-neutral-300 rounded-md p-4 focus-within:border-neutral-500">
       <input
         type="text"
         ref={innerRef}

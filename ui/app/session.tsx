@@ -12,9 +12,11 @@ import Brand from "@/app/brand";
 export default function Session({
   interpreterUrl,
   refreshSession,
+  version,
 }: {
   interpreterUrl: string;
   refreshSession: () => void;
+  version: string;
 }) {
   const [history, setHistory] = React.useState<Message[]>([]);
 
@@ -65,12 +67,15 @@ export default function Session({
         <div className="flex-1 h-0 overflow-y-auto px-8 flex flex-col">
           {history.length === 0 ? <Brand /> : <ChatHistory history={history} />}
         </div>
-        <div className="px-8">
+        <div className="px-16 mt-8 mb-4">
           <ChatInput
             innerRef={chatInputRef}
             disabled={chatRoundState !== "not active" || error !== null}
             onMessage={startChatRound}
           />
+        </div>
+        <div className="text-blue-200 text-center text-xs pb-4">
+          Version {version}
         </div>
       </div>
       <div className="flex-1 w-0 flex flex-col px-4 bg-blue-100 shadow-[0_0_25px_10px_rgba(0,0,0,0.15)]">

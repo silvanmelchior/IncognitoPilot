@@ -5,8 +5,10 @@ import Session from "@/app/session";
 
 export default function SessionManager({
   interpreterUrl,
+  version,
 }: {
   interpreterUrl: string;
+  version: string;
 }) {
   const [sessionCnt, setSessionCnt] = React.useState(0);
   const refreshSession = () => setSessionCnt(sessionCnt + 1);
@@ -15,6 +17,7 @@ export default function SessionManager({
       key={sessionCnt}
       refreshSession={refreshSession}
       interpreterUrl={interpreterUrl}
+      version={version}
     />
   );
 }

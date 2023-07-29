@@ -17,5 +17,6 @@ RUN cd ui && \
     npm run build && \
     cd ..
 
+COPY VERSION VERSION
 COPY docker/start* .
 CMD ["/opt/app/start.sh"]
