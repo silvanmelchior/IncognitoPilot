@@ -19,4 +19,5 @@ RUN cd ui && \
 
 COPY VERSION VERSION
 COPY docker/start* .
+RUN chmod 755 start*
 CMD ["/opt/app/start.sh"]
