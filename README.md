@@ -1,6 +1,6 @@
 <h1 align="center">Incognito Pilot</h1>
 
-<p align="center"><em>Your local AI code interpreter.</em></p>
+<p align="center"><em>Your local AI code interpreter</em></p>
 
 **Incognito Pilot** combines a large language model with a Python interpreter, so it can run code and execute tasks for you.
 It is similar to **ChatGPT Code Interpreter**, but the interpreter runs locally.
@@ -31,7 +31,7 @@ TODO: screenshot here
    and create an [API key](https://platform.openai.com/account/api-keys).
 4. Now, just run the following command (replace your working directory and API key):
 
-```
+```shell
 docker run -i -t \
   -p 3030:3030 -p 3031:3031 \
   -e OPENAI_API_KEY="sk-your-api-key" \
@@ -77,7 +77,7 @@ This will download a much larger version, equipped with [many packages](/docker/
 To use another model than the default one (GPT-4), set the environment variable `LLM`.
 OpenAI's GPT models have the prefix `gpt:`, so to use GPT-3.5 for example (the original ChatGPT), add the following to the docker run command:
 
-```
+```shell
 -e LLM="gpt:gpt-3.5-turbo"
 ```
 
@@ -90,7 +90,7 @@ This can be changed to any ports using the port mapping of docker.
 However, the new port for the interpreter also needs to be communicated to the UI, using the environment variable `INTERPRETER_URL`.
 For example, to serve the UI on port 8080 and the interpreter on port 8081, run the following:
 
-```
+```shell
 docker run -i -t \
   -p 8080:3030 -p 8081:3031 \
   -e OPENAI_API_KEY="sk-your-api-key" \
@@ -133,13 +133,13 @@ RUN source venv_interpreter/bin/activate && \
 
 Put your dependencies into a *requirements.txt* file and run the following command:
 
-```
+```shell
 docker build --tag incognito-pilot-custom .
 ```
 
 Then run the container like this:
 
-```
+```shell
 docker run -i -t \
   -p 3030:3030 -p 3031:3031 \
   -e OPENAI_API_KEY="sk-your-api-key" \

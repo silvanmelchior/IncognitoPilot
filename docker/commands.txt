@@ -1,0 +1,5 @@
+The interpreter-venv images were built like this:
+
+docker buildx build --platform linux/amd64,linux/arm64/v8 --tag silvanmelchior/interpreter-venv:1.0.0 --progress plain --file docker\Dockerfile_env_full .
+
+docker buildx build --platform linux/amd64,linux/arm64/v8 --tag silvanmelchior/interpreter-venv:1.0.0-slim --progress plain --file docker\Dockerfile_env_slim .
