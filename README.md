@@ -149,7 +149,7 @@ docker run -i -t \
 
 ## :house: Architecture
 
-TODO (llm, frontend, backend next.js, backend fastapi, interpreter, websocket, ...)
+![Architecture Diagram](/docs/architecture.png)
 
 ## :wrench: Development
 
