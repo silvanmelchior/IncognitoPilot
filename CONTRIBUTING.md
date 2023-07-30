@@ -7,16 +7,17 @@ Hello there! Any kind of contribution to **Incognito Pilot** is most welcome!
 - If you found a bug or have a feature request, please use GitHub
   [issues](https://github.com/silvanmelchior/IncognitoPilot/issues).
 - If you fixed a bug or implemented a new feature, please do a pull request. If it
-  is a larger change or addition, it would be great to first discuss thorugh an
+  is a larger change or addition, it would be great to first discuss it through an
   [issue](https://github.com/silvanmelchior/IncognitoPilot/issues).
 
 ## Development Setup
 
-Warning: If you run **Incognito Pilot** on your own system, the Python interpreter will have full access to all your files.
+Warning: If you run **Incognito Pilot** on your own system, the Python interpreter will have full access to all your files!
 Always be careful when approving any code!
 
 Prerequisites:
 
+- OpenAI API key
 - Cloned repository
 - Installed [python](https://www.python.org/)
 - Installed [poetry](https://python-poetry.org/)
@@ -52,7 +53,7 @@ Open a terminal in the *ui* folder and run the following:
 npm install
 export INTERPRETER_URL=localhost:8000
 export OPENAI_API_KEY=sk-your-api-key
-nm run dev
+npm run dev
 ```
 
 You should now be able to access the UI on the following URL: http://localhost:3000.
