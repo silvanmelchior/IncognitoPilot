@@ -1,11 +1,11 @@
-<h1 style="text-align: center">Incognito Pilot</h1>
+<h1 align="center">Incognito Pilot</h1>
 
-<p style="text-align: center; font-style: italic;">Your local AI code interpreter.</p>
+<p align="center"><em>Your local AI code interpreter.</em></p>
 
 **Incognito Pilot** combines a large language model with a Python interpreter, so it can run code and execute tasks for you.
 It is similar to **ChatGPT Code Interpreter**, but the interpreter runs locally.
 This allows you to work with sensitive data without uploading it to the cloud.
-To still be able to use powerful models available via API only (like GPT-4), there is an approval mechanism in the UI, which separates your data from the remote services.
+To still be able to use powerful models available via API only (like GPT-4), there is an approval mechanism in the UI, which separates your local data from the remote services.
 
 With **Incognito Pilot**, you can:
 
@@ -29,7 +29,7 @@ TODO: screenshot here
 3. Create an [OpenAI account](https://platform.openai.com),
    add a [credit card](https://platform.openai.com/account/billing/payment-methods)
    and create an [API key](https://platform.openai.com/account/api-keys).
-4. Now, just run the following command:
+4. Now, just run the following command (replace your working directory and API key):
 
 ```
 docker run -i -t \
@@ -43,7 +43,7 @@ You can now visit http://localhost:3030 and should see the **Incognito Pilot** i
 
 Some final remarks:
 
-- If you don't have docker, you can also install the development setup, see below.
+- If you don't have docker, you can install **Incognito Pilot** on your system directly, using the development setup (see below).
 - You can also run **Incognito Pilot** with the free trial credits of OpenAI, without adding a credit card.
   At the moment, this does not include GPT-4 however, so see below how to change the model to GPT-3.5.
 
@@ -74,7 +74,7 @@ This will download a much larger version, equipped with [many packages](/docker/
 
 ### Change model
 
-To use another model as the default one (GPT-4), set the environment variable `LLM`.
+To use another model than the default one (GPT-4), set the environment variable `LLM`.
 OpenAI's GPT models have the prefix `gpt:`, so to use GPT-3.5 for example (the original ChatGPT), add the following to the docker run command:
 
 ```
@@ -87,7 +87,7 @@ Please note that GPT-4 is considerably better in this interpreter setup than GPT
 
 Per default, the UI is served on port 3030 and contacts the interpreter at port 3031.
 This can be changed to any ports using the port mapping of docker.
-However, the new part for the interpreter also needs to be communicated to the UI, using the environment variable `INTERPRETER_URL`.
+However, the new port for the interpreter also needs to be communicated to the UI, using the environment variable `INTERPRETER_URL`.
 For example, to serve the UI on port 8080 and the interpreter on port 8081, run the following:
 
 ```
@@ -127,8 +127,7 @@ WORKDIR /opt/app
 
 COPY requirements.txt .
 
-RUN python3 -m venv venv_interpreter && \
-    source venv_interpreter/bin/activate && \
+RUN source venv_interpreter/bin/activate && \
     pip3 install -r requirements.txt
 ```
 
