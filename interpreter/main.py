@@ -16,6 +16,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+TIMEOUT = (
+    int(os.environ["INTERPRETER_TIMEOUT"])
+    if "INTERPRETER_TIMEOUT" in os.environ
+    else 30
+)
 TIMEOUT_MESSAGE = "ERROR: TIMEOUT REACHED"
 
 try:
@@ -31,7 +36,7 @@ def get_interpreter() -> IPythonInterpreter:
         working_dir=WORKING_DIRECTORY,
         ipython_path=IPYTHON_PATH,
         deactivate_venv=True,
-        timeout=30,
+        timeout=TIMEOUT,
     )
     return interpreter
 
