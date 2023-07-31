@@ -2,15 +2,13 @@ import React from "react";
 
 export default function Running() {
   const [state, setState] = React.useState(0);
-  const stateRef = React.useRef(state);
+
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      stateRef.current++;
-      if (stateRef.current > 4) stateRef.current = 0;
-      setState(stateRef.current);
-    }, 200);
+    const updateState = (state: number) => (state >= 4 ? 0 : state + 1);
+    const interval = setInterval(() => setState(updateState), 200);
     return () => clearInterval(interval);
-  });
+  }, []);
+
   if (state === 0) return "Running...";
   if (state === 1) return "Running";
   if (state === 2) return "Running.";
