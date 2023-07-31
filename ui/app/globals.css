@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --scrollbar-color: rgba(23, 37, 84, 0.2);
+  --scrollbar-color-hover: rgba(23, 37, 84, 0.3);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-color);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-color);
+  border-radius: 14px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-color-hover);
+}

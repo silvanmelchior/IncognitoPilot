@@ -2,8 +2,17 @@ import { Message } from "@/llm/base";
 import { TbUser } from "react-icons/tb";
 import Image from "next/image";
 import robotIcon from "./icon.png";
+import React from "react";
 
 export default function ChatHistory({ history }: { history: Message[] }) {
+  const bottomRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  }, [history]);
+
   return (
     <div className="mt-auto">
       {history
@@ -38,6 +47,7 @@ export default function ChatHistory({ history }: { history: Message[] }) {
             )}
           </div>
         ))}
+      <div ref={bottomRef} />
     </div>
   );
 }

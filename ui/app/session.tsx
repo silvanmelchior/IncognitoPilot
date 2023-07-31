@@ -27,7 +27,7 @@ export default function Session({
   const [approverIn, code, askApproveIn, autoApproveIn] = useApprover();
   const [approverOut, result, askApproveOut, autoApproveOut] = useApprover();
 
-  const chatInputRef = React.useRef<HTMLInputElement | null>(null);
+  const chatInputRef = React.useRef<HTMLTextAreaElement | null>(null);
 
   const interpreterRef = React.useRef<Interpreter | null>(null);
   if (interpreterRef.current === null) {
