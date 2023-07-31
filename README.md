@@ -20,7 +20,8 @@ It runs on every hardware, so you can for example analyze large datasets on powe
 We also plan to support more models like Llama 2 in the future.
 
 <p align="center">
-    <img src="https://github.com/silvanmelchior/IncognitoPilot/blob/main/docs/screenshot.png" alt="screenshot" style="width: 75%">
+    <img src="https://github.com/silvanmelchior/IncognitoPilot/blob/main/docs/screenshot.png" alt="screenshot" style="width: 75%"><br>
+    <em>Screenshot of Incognito Pilot v1.0.0</em>
 </p>
 
 ## :package: Installation
