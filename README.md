@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://github.com/silvanmelchior/IncognitoPilot/blob/main/docs/title.png" alt="logo">
+    <img src="https://github.com/silvanmelchior/IncognitoPilot/blob/main/docs/title.png" alt="logo" style="width: 75%">
 </p>
 
 <p align="center"><em>Your local AI code interpreter</em></p>
