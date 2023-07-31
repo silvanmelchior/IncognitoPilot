@@ -21,7 +21,7 @@ export default function InterpreterIO({
 }) {
   return (
     <div className="h-full flex flex-col">
-      <div className="text-xl mt-2">{title}</div>
+      <div className="text-xl mt-2 text-blue-400">{title}</div>
       <div
         className={`flex-1 ${
           busy ? "bg-neutral-100" : "bg-neutral-50"

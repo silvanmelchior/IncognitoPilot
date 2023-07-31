@@ -10,7 +10,7 @@ export function Header({
   showNew: boolean;
 }) {
   return (
-    <>
+    <div className="w-full">
       {error !== null && (
         <div className="bg-red-600 text-white font-bold p-4">
           <div className="flex place-items-center">
@@ -36,6 +36,6 @@ export function Header({
           </button>
         </div>
       )}
-    </>
+    </div>
   );
 }

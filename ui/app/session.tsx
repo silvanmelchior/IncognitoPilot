@@ -19,8 +19,8 @@ export default function Session({
   version: string;
 }) {
   const [history, setHistory] = React.useState<Message[]>([]);
-
   const [error, setError] = React.useState<string | null>(null);
+  const [showIO, setShowIO] = React.useState<boolean>(false);
 
   const [chatRoundState, setChatRoundState] =
     React.useState<ChatRoundState>("not active");
@@ -28,11 +28,16 @@ export default function Session({
   const [approverOut, result, askApproveOut, autoApproveOut] = useApprover();
 
   const chatInputRef = React.useRef<HTMLTextAreaElement | null>(null);
-
   const interpreterRef = React.useRef<Interpreter | null>(null);
   if (interpreterRef.current === null) {
     interpreterRef.current = new Interpreter(interpreterUrl);
   }
+
+  React.useEffect(() => {
+    if (chatRoundState === "waiting for approval") {
+      setShowIO(true);
+    }
+  }, [chatRoundState]);
 
   const focusChatInput = () => {
     setTimeout(() => chatInputRef.current && chatInputRef.current.focus(), 100);
@@ -57,17 +62,21 @@ export default function Session({
   };
 
   return (
-    <div className="flex h-full bg-blue-50">
-      <div className="flex-1 flex flex-col">
+    <div className="relative h-full bg-blue-50 overflow-x-hidden">
+      <div
+        className={`absolute top-0 left-0 h-full flex flex-col items-center transition-all duration-500 ${
+          showIO ? "w-1/2" : "w-[calc(100%-100px)]"
+        }`}
+      >
         <Header
           error={error}
           onNew={refreshSession}
           showNew={history.length > 0}
         />
-        <div className="flex-1 h-0 overflow-y-auto px-8 flex flex-col">
+        <div className="flex-1 h-0 overflow-y-auto px-8 flex flex-col w-full max-w-6xl">
           {history.length === 0 ? <Brand /> : <ChatHistory history={history} />}
         </div>
-        <div className="px-16 mt-8 mb-4">
+        <div className="px-16 mt-8 mb-4 w-full max-w-4xl">
           <ChatInput
             innerRef={chatInputRef}
             disabled={chatRoundState !== "not active" || error !== null}
@@ -79,7 +88,14 @@ export default function Session({
           Version {version}
         </div>
       </div>
-      <div className="flex-1 w-0 flex flex-col px-4 bg-blue-100 shadow-[0_0_25px_10px_rgba(0,0,0,0.15)]">
+      <div
+        className={`absolute top-0 right-0 w-1/2 h-full flex flex-col px-4 bg-blue-100 shadow-[0_0_25px_10px_rgba(0,0,0,0.15)] transition-all duration-500 ${
+          showIO
+            ? ""
+            : "translate-x-[calc(100%-100px)] opacity-50 hover:transition-none hover:opacity-100 cursor-pointer"
+        }`}
+        onClick={() => setShowIO(true)}
+      >
         <div className="flex-1 flex flex-col h-0">
           <div className="flex-1 h-0">
             <InterpreterIO
