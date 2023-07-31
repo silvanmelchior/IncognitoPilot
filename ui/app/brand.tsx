@@ -1,10 +1,13 @@
-import { TbRobot } from "react-icons/tb";
+import Image from "next/image";
+import brandImage from "./brand.png";
 
 export default function Brand() {
   return (
     <div className="flex h-full flex-col items-center justify-center">
-      <TbRobot size={96} color="#bfdbfe" />
-      <div className="text-2xl text-blue-200">Incognito Pilot</div>
+      <div className="w-48">
+        <Image src={brandImage} alt="Brand" priority />
+      </div>
+      <div className="text-2xl text-blue-200 mt-4">Incognito Pilot</div>
       <div className="text-lg text-blue-200 mt-1">
         Your local AI code interpreter
       </div>

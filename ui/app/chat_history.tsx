@@ -1,5 +1,7 @@
 import { Message } from "@/llm/base";
-import { TbRobot, TbUser } from "react-icons/tb";
+import { TbUser } from "react-icons/tb";
+import Image from "next/image";
+import robotIcon from "./icon.png";
 
 export default function ChatHistory({ history }: { history: Message[] }) {
   return (
@@ -13,8 +15,8 @@ export default function ChatHistory({ history }: { history: Message[] }) {
         .map((msg, idx) => (
           <div key={idx} className="flex mt-4">
             {msg.role === "model" ? (
-              <div className="mr-4 mt-2">
-                <TbRobot size={36} />
+              <div className="mr-4 mt-2 min-w-[36px]">
+                <Image src={robotIcon} alt="robot" width={36} priority />
               </div>
             ) : (
               <div className="flex-1 min-w-[20px]" />

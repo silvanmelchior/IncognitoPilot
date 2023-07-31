@@ -1,4 +1,6 @@
-<h1 align="center">Incognito Pilot</h1>
+<p align="center">
+    <img src="https://github.com/silvanmelchior/IncognitoPilot/blob/main/docs/title.png" alt="logo">
+</p>
 
 <p align="center"><em>Your local AI code interpreter</em></p>
 
