@@ -19,7 +19,9 @@ and much more!
 It runs on every hardware, so you can for example analyze large datasets on powerful machines.
 We also plan to support more models like Llama 2 in the future.
 
-TODO: screenshot here
+<p align="center">
+    <img src="https://github.com/silvanmelchior/IncognitoPilot/blob/main/docs/screenshot.png" alt="screenshot" style="width: 75%">
+</p>
 
 ## :package: Installation
 
