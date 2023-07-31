@@ -1,6 +1,6 @@
 import { Message } from "@/llm/base";
-import { chatCall, Interpreter } from "@/app/api_calls";
-import { Approver } from "@/app/approver";
+import { chatCall, Interpreter } from "@/app/session/communication/api_calls";
+import { Approver } from "@/app/session/approval/approver";
 
 export type ChatRoundState =
   | "not active"

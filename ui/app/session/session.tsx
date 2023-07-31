@@ -1,13 +1,16 @@
 import React from "react";
 import { Message } from "@/llm/base";
-import ChatInput from "@/app/chat_input";
-import ChatHistory from "@/app/chat_history";
-import InterpreterIO from "@/app/interpreter_io";
-import { Interpreter } from "@/app/api_calls";
-import { useApprover } from "@/app/approver";
-import { ChatRound, ChatRoundState } from "@/app/chat_round";
-import { Header } from "@/app/header";
-import Brand from "@/app/brand";
+import ChatInput from "@/app/session/chat/chat_input";
+import ChatHistory from "@/app/session/chat/chat_history";
+import InterpreterIO from "@/app/session/approval/interpreter_io";
+import { Interpreter } from "@/app/session/communication/api_calls";
+import { useApprover } from "@/app/session/approval/approver";
+import {
+  ChatRound,
+  ChatRoundState,
+} from "@/app/session/communication/chat_round";
+import { Header } from "@/app/session/chat/header";
+import Brand from "@/app/session/chat/brand";
 
 export default function Session({
   interpreterUrl,

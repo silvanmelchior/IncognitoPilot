@@ -1,6 +1,6 @@
 import React from "react";
-import { Approver } from "@/app/approver";
-import Running from "@/app/running";
+import { Approver } from "@/app/session/approval/approver";
+import Running from "@/app/session/approval/running";
 
 export default function InterpreterIO({
   title,

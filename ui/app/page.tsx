@@ -1,5 +1,5 @@
 import React from "react";
-import SessionManager from "@/app/session-manager";
+import Session_manager from "@/app/session/session_manager";
 import path from "path";
 import * as fs from "fs";
 
@@ -32,5 +32,5 @@ function getVersion(): Promise<string> {
 export default async function Home() {
   const interpreterUrl = getInterpreterUrl();
   const version = await getVersion();
-  return <SessionManager interpreterUrl={interpreterUrl} version={version} />;
+  return <Session_manager interpreterUrl={interpreterUrl} version={version} />;
 }

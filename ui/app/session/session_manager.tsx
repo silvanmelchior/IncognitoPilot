@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Session from "@/app/session";
+import Session from "@/app/session/session";
 
-export default function SessionManager({
+export default function Session_manager({
   interpreterUrl,
   version,
 }: {
