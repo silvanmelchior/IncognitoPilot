@@ -71,6 +71,7 @@ export default function Session({
           <ChatInput
             innerRef={chatInputRef}
             disabled={chatRoundState !== "not active" || error !== null}
+            llmAnimation={chatRoundState === "waiting for model"}
             onMessage={startChatRound}
           />
         </div>
