@@ -1,5 +1,6 @@
 import React from "react";
 import { Approver } from "@/app/approver";
+import Running from "@/app/running";
 
 export default function InterpreterIO({
   title,
@@ -8,6 +9,7 @@ export default function InterpreterIO({
   approver,
   autoApprove,
   disabled,
+  busy,
 }: {
   title: string;
   content: string | null;
@@ -15,12 +17,19 @@ export default function InterpreterIO({
   approver: Approver;
   autoApprove: boolean;
   disabled: boolean;
+  busy: boolean;
 }) {
   return (
     <div className="h-full flex flex-col">
       <div className="text-xl mt-2">{title}</div>
-      <div className="flex-1 bg-neutral-50 whitespace-pre overflow-auto h-0 font-mono mt-2 p-2">
-        {content}
+      <div
+        className={`flex-1 ${
+          busy ? "bg-neutral-100" : "bg-neutral-50"
+        } whitespace-pre overflow-auto h-0 font-mono mt-2 p-2 ${
+          askApprove ? "border-red-400" : "border-transparent"
+        } border-2`}
+      >
+        {busy ? <Running /> : content}
       </div>
       <div className="flex justify-end items-center my-2">
         <div>

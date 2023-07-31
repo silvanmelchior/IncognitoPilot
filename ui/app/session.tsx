@@ -89,6 +89,7 @@ export default function Session({
               autoApprove={autoApproveIn}
               approver={approverIn}
               disabled={error !== null}
+              busy={false}
             />
           </div>
         </div>
@@ -101,6 +102,7 @@ export default function Session({
               autoApprove={autoApproveOut}
               approver={approverOut}
               disabled={error !== null}
+              busy={chatRoundState === "waiting for interpreter"}
             />
           </div>
         </div>
