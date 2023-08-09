@@ -1,10 +1,13 @@
 [tool.poetry]
-name = "interpreter"
+name = "services"
 version = "0.0.0"
 description = ""
 authors = ["Silvan Melchior"]
 license = "MIT"
-packages = [{include = "interpreter"}]
+packages = [
+    {include = "interpreter"},
+    {include = "llm"},
+]
 
 [tool.poetry.dependencies]
 python = ">=3.9"

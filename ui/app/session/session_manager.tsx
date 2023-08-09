@@ -3,11 +3,13 @@
 import React from "react";
 import Session from "@/app/session/session";
 
-export default function Session_manager({
+export default function SessionManager({
   interpreterUrl,
+  llmUrl,
   version,
 }: {
   interpreterUrl: string;
+  llmUrl: string;
   version: string;
 }) {
   const [sessionCnt, setSessionCnt] = React.useState(0);
@@ -17,6 +19,7 @@ export default function Session_manager({
       key={sessionCnt}
       refreshSession={refreshSession}
       interpreterUrl={interpreterUrl}
+      llmUrl={llmUrl}
       version={version}
     />
   );

@@ -27,3 +27,5 @@ export async function POST(
     throw e;
   }
 }
+
+// TODO: REMOVE ALL OF THIS, ALSO llm FOLDER with base and gpt4
