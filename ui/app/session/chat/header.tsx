@@ -14,7 +14,7 @@ export function Header({
       {error !== null && (
         <div className="bg-red-600 text-white font-bold p-4">
           <div className="flex place-items-center">
-            <div className="flex-1">Error: {error}</div>
+            <div className="flex-1 mr-2">Error: {error}</div>
             <div>
               <button
                 className="px-4 py-2 bg-white hover:bg-red-100 text-red-600 rounded-md"

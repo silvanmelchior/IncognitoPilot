@@ -1,5 +1,5 @@
 import React from "react";
-import { Message } from "@/llm/base";
+import { Message } from "@/app/session/communication/message";
 import ChatInput from "@/app/session/chat/chat_input";
 import ChatHistory from "@/app/session/chat/chat_history";
 import InterpreterIO from "@/app/session/approval/interpreter_io";

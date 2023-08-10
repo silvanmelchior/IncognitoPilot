@@ -1,4 +1,4 @@
-import { Message } from "@/llm/base";
+import { Message } from "@/app/session/communication/message";
 
 export default class LLM {
   constructor(private readonly llmUrl: string) {}

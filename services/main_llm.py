@@ -25,9 +25,8 @@ async def chat(websocket: WebSocket):
     except ws_exceptions:
         return
 
-    history = Request.validate_json(history)
-
     try:
+        history = Request.validate_json(history)
         response_generator = llm.chat(history)
         try:
             for response in response_generator:
@@ -39,9 +38,14 @@ async def chat(websocket: WebSocket):
             response_generator.close()
             return
 
-    except LLMException as e:
+    except Exception as e:
         try:
-            await websocket.send_text("_error_ " + str(e))
+            if isinstance(e, LLMException):
+                error = str(e)
+            else:
+                print(e, type(e))
+                error = "Internal error"
+            await websocket.send_text("_error_ " + error)
             await websocket.close()
         except ws_exceptions:
             return

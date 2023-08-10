@@ -1,4 +1,4 @@
-import { Message } from "@/llm/base";
+import { Message } from "@/app/session/communication/message";
 import Interpreter from "@/app/session/communication/interpreter";
 import LLM from "@/app/session/communication/llm";
 import { Approver } from "@/app/session/approval/approver";

@@ -1,4 +1,4 @@
-import { Message } from "@/llm/base";
+import { Message } from "@/app/session/communication/message";
 import { TbUser } from "react-icons/tb";
 import Image from "next/image";
 import robotIcon from "../../icon.png";
