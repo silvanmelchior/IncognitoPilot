@@ -1,68 +1,47 @@
-import os
-import sys
-import time
-from typing import Literal, Optional
+from fastapi import WebSocket
+from fastapi.websockets import WebSocketDisconnect
+from pydantic import TypeAdapter
+from websockets.exceptions import ConnectionClosedError
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, TypeAdapter
-
-app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-try:
-    LLM_SETTING = os.environ["LLM"]
-except KeyError:
-    print("ERROR: Missing environment variables, exiting...", file=sys.stderr)
-    sys.exit(1)
+from llm import LLMException, Message, get_llm
+from utils import get_app, get_env_var
 
 
-class Message(BaseModel):
-    role: Literal["user", "model", "interpreter"]
-    text: Optional[str] = None
-    code: Optional[str] = None
-    code_result: Optional[str] = None
+app = get_app()
 
+LLM_SETTING = get_env_var("LLM", "gpt-openai:gpt-4")
+llm = get_llm(LLM_SETTING)
 
 Request = TypeAdapter(list[Message])
 
 
-class Response(BaseModel):
-    text: Optional[str] = None
-    code: Optional[str] = None
-
-
 @app.websocket("/chat")
 async def chat(websocket: WebSocket):
-    await websocket.accept()
+    ws_exceptions = WebSocketDisconnect, ConnectionClosedError
 
-    history = await websocket.receive_text()
+    try:
+        await websocket.accept()
+        history = await websocket.receive_text()
+    except ws_exceptions:
+        return
+
     history = Request.validate_json(history)
-    print(history, type(history))
 
-    text = "I will print hello world"
-    for i in range(len(text)):
-        response = Response(text=text[: i + 1])
-        await websocket.send_text(response.model_dump_json(exclude_none=True))
-        time.sleep(0.1)
+    try:
+        response_generator = llm.chat(history)
+        try:
+            for response in response_generator:
+                msg = "_success_ " + response.model_dump_json(exclude_none=True)
+                await websocket.send_text(msg)
+            await websocket.close()
 
-    code = "print('hello world')"
-    for i in range(len(code)):
-        response = Response(text=text, code=code[: i + 1])
-        await websocket.send_text(response.model_dump_json(exclude_none=True))
-        time.sleep(0.1)
+        except ws_exceptions:
+            response_generator.close()
+            return
 
-    await websocket.close()
-
-    # TODO: handle disconnect (stop generator)
-    # try:
-    #     ...
-    # except WebSocketDisconnect:
-    #     pass
-    # TODO: error handling as in main_interpreter.py
+    except LLMException as e:
+        try:
+            await websocket.send_text("_error_ " + str(e))
+            await websocket.close()
+        except ws_exceptions:
+            return

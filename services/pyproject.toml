@@ -7,6 +7,7 @@ license = "MIT"
 packages = [
     {include = "interpreter"},
     {include = "llm"},
+    {include = "utils"},
 ]
 
 [tool.poetry.dependencies]
@@ -14,6 +15,7 @@ python = ">=3.9"
 fastapi = "^0.100.0"
 uvicorn = "^0.23.0"
 websockets = "^11.0.3"
+openai = "^0.27.8"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"

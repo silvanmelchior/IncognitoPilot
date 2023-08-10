@@ -23,19 +23,36 @@ export default class LLM {
     });
   }
 
-  async chatCall(
+  chatCall(
     messages: Message[],
     onResponse: (response: Message) => void,
   ): Promise<void> {
-    const ws = await this.connect();
-
-    ws.send(JSON.stringify(messages));
-    ws.onmessage = (event) => {
-      const message = JSON.parse(event.data) as Message;
-      message.role = "model";
-      onResponse(message);
-    };
-
-    await this.waitClose(ws);
+    return new Promise((resolve, reject) => {
+      this.connect()
+        .then((ws) => {
+          ws.send(JSON.stringify(messages));
+          ws.onmessage = (event) => {
+            if (event.data.startsWith("_success_")) {
+              const message = JSON.parse(event.data.substring(10)) as Message;
+              message.role = "model";
+              onResponse(message);
+            } else if (event.data.startsWith("_error_")) {
+              reject(Error(event.data.substring(8)));
+            } else {
+              reject(Error("Invalid response"));
+            }
+          };
+          this.waitClose(ws)
+            .then(() => {
+              resolve();
+            })
+            .catch((e) => {
+              reject(e);
+            });
+        })
+        .catch((e) => {
+          reject(e);
+        });
+    });
   }
 }

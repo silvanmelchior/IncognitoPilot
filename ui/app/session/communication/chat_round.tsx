@@ -42,7 +42,7 @@ export class ChatRound {
     this.setState("waiting for model");
     const response: Message = { role: "model" };
     this.extendHistory(response);
-    await this.llm.chatCall(this.history, (response) => {
+    await this.llm.chatCall(this.history.slice(0, -1), (response) => {
       this.modifyHistory(response);
     });
     return this.history[this.history.length - 1];
