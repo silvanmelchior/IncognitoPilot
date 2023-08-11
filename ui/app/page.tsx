@@ -1,5 +1,5 @@
 import React from "react";
-import Session_manager from "@/app/session/session_manager";
+import SessionManager from "@/app/session/session_manager";
 import path from "path";
 import * as fs from "fs";
 
@@ -11,6 +11,14 @@ function getInterpreterUrl() {
     throw new Error("INTERPRETER_URL is undefined");
   }
   return interpreterUrl;
+}
+
+function getLlmUrl() {
+  const llmUrl = process.env.LLM_URL;
+  if (llmUrl === undefined) {
+    throw new Error("LLM_URL is undefined");
+  }
+  return llmUrl;
 }
 
 function getVersion(): Promise<string> {
@@ -30,7 +38,11 @@ function getVersion(): Promise<string> {
 }
 
 export default async function Home() {
-  const interpreterUrl = getInterpreterUrl();
-  const version = await getVersion();
-  return <Session_manager interpreterUrl={interpreterUrl} version={version} />;
+  return (
+    <SessionManager
+      interpreterUrl={getInterpreterUrl()}
+      llmUrl={getLlmUrl()}
+      version={await getVersion()}
+    />
+  );
 }

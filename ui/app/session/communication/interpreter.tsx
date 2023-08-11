@@ -1,22 +1,4 @@
-import axios, { AxiosError } from "axios";
-import { Message } from "@/llm/base";
-
-export async function chatCall(messages: Message[]): Promise<Message> {
-  try {
-    const response = await axios.post("/api/chat", messages);
-    return response.data;
-  } catch (e) {
-    if (e instanceof AxiosError) {
-      const msg = e.response?.data;
-      if (msg !== undefined && msg !== "") {
-        throw new Error(msg);
-      }
-    }
-    throw e;
-  }
-}
-
-export class Interpreter {
+export default class Interpreter {
   private ws: WebSocket | null = null;
 
   constructor(private readonly interpreterUrl: string) {}
@@ -31,7 +13,7 @@ export class Interpreter {
           reject(Error(event.data));
         }
       };
-      this.ws!.onerror = (event) => {
+      this.ws!.onerror = () => {
         reject(Error("Could not connect to interpreter"));
       };
     });
