@@ -105,25 +105,29 @@ class GPTOpenAI(BaseLLM):
                 function_call="auto",
                 stream=True,
             )
+
+            response = {}
+            previous_code = None
+            for chunk_all in chunk_generator:
+                chunk = chunk_all["choices"][0]["delta"]
+                fill_dict(response, chunk)
+
+                text = None
+                if "content" in response:
+                    text = response["content"]
+
+                code = None
+                if (
+                    "function_call" in response
+                    and "arguments" in response["function_call"]
+                ):
+                    args = response["function_call"]["arguments"]
+                    code = lazy_parse_args(args)
+                if code is None:
+                    code = previous_code
+                previous_code = code
+
+                yield Response(text=text, code=code)
+
         except OpenAIError as e:
             raise LLMException(str(e))
-
-        response = {}
-        previous_code = None
-        for chunk_all in chunk_generator:
-            chunk = chunk_all["choices"][0]["delta"]
-            fill_dict(response, chunk)
-
-            text = None
-            if "content" in response:
-                text = response["content"]
-
-            code = None
-            if "function_call" in response and "arguments" in response["function_call"]:
-                args = response["function_call"]["arguments"]
-                code = lazy_parse_args(args)
-            if code is None:
-                code = previous_code
-            previous_code = code
-
-            yield Response(text=text, code=code)

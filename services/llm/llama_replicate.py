@@ -1,6 +1,7 @@
 from typing import Generator, Optional
 
 import replicate
+from replicate.exceptions import ReplicateException
 
 from llm.base import BaseLLM, LLMException
 from llm.types import Message, Response
@@ -95,22 +96,26 @@ class LlamaReplicate(BaseLLM):
 
     def chat(self, history: list[Message]) -> Generator[Response, None, None]:
         messages = [msg_to_llama_msg(msg) for msg in history]
-        output = self._client.run(  # TODO: error handling
-            self._model_name,
-            input={
-                "prompt": " ".join(messages),
-                "system_prompt": SYSTEM_PROMPT,
-                "temperature": 0.75,  # TODO: better temperature?
-            },
-        )
+        try:
+            output = self._client.run(
+                self._model_name,
+                input={
+                    "prompt": " ".join(messages),
+                    "system_prompt": SYSTEM_PROMPT,
+                    "temperature": 0.01,
+                },
+            )
 
-        full_text = ""
-        for item in output:
-            full_text += item
+            full_text = ""
+            for item in output:
+                full_text += item
 
-            text, code, finished = split_output(full_text)
-            if text is not None or code is not None:
-                yield Response(text=text, code=code)
+                text, code, finished = split_output(full_text)
+                if text is not None or code is not None:
+                    yield Response(text=text, code=code)
 
-            if finished:
-                break
+                if finished:
+                    break
+
+        except ReplicateException as e:
+            raise LLMException(str(e))
