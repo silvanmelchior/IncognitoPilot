@@ -1,10 +1,11 @@
 from llm.llama import LlamaReplicate, LlamaTGI
-from llm.gpt_openai import GPTOpenAI
+from llm.gpt import GPTAzure, GPTOpenAI
 from llm.base import BaseLLM
 
 
 MAP_LLM = {
     "gpt-openai": GPTOpenAI,
+    "gpt-azure": GPTAzure,
     "llama-replicate": LlamaReplicate,
     "llama-tgi": LlamaTGI,
 }
