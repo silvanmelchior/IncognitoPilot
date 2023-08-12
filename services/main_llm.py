@@ -1,6 +1,8 @@
+import json
+
 from fastapi import WebSocket
 from fastapi.websockets import WebSocketDisconnect
-from pydantic import TypeAdapter
+from pydantic import BaseModel
 from websockets.exceptions import ConnectionClosedError
 
 from llm import LLMException, Message, get_llm
@@ -12,7 +14,9 @@ app = get_app()
 LLM_SETTING = get_env_var("LLM", "gpt-openai:gpt-4")
 llm = get_llm(LLM_SETTING)
 
-Request = TypeAdapter(list[Message])
+
+class Request(BaseModel):
+    history: list[Message]
 
 
 @app.websocket("/chat")
@@ -26,11 +30,12 @@ async def chat(websocket: WebSocket):
         return
 
     try:
-        history = Request.validate_json(history)
+        history = json.loads(history)
+        history = Request(history=history).history
         response_generator = llm.chat(history)
         try:
             for response in response_generator:
-                msg = "_success_ " + response.model_dump_json(exclude_none=True)
+                msg = "_success_ " + response.json(exclude_none=True)
                 await websocket.send_text(msg)
             await websocket.close()
 
