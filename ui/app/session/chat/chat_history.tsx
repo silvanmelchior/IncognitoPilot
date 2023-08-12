@@ -1,7 +1,5 @@
 import { Message } from "@/app/session/communication/message";
 import { TbUser } from "react-icons/tb";
-import Image from "next/image";
-import robotIcon from "../../icon.png";
 import React from "react";
 
 export default function ChatHistory({ history }: { history: Message[] }) {
@@ -25,7 +23,7 @@ export default function ChatHistory({ history }: { history: Message[] }) {
           <div key={idx} className="flex mt-4">
             {msg.role === "model" ? (
               <div className="mr-4 mt-2 min-w-[36px]">
-                <Image src={robotIcon} alt="robot" width={36} priority />
+                <img src="./icon.png" alt="robot" width={36} />
               </div>
             ) : (
               <div className="flex-1 min-w-[20px]" />

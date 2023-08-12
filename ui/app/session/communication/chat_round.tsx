@@ -20,8 +20,16 @@ export class ChatRound {
     private readonly interpreter: Interpreter,
     private readonly setState: (state: ChatRoundState) => void,
     private readonly setCodeResult: (result: string) => void,
-    llmUrl: string,
   ) {
+    let llmUrl = process.env.NEXT_PUBLIC_LLM_URL ?? "";
+    if (llmUrl === "") {
+      try {
+        llmUrl = location.host;
+      } catch (e) {
+        llmUrl = "localhost";
+      }
+    }
+    llmUrl += "/api/llm";
     this.llm = new LLM(llmUrl);
   }
 

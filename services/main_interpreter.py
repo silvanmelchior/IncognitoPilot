@@ -25,7 +25,7 @@ def get_interpreter() -> IPythonInterpreter:
     return interpreter
 
 
-@app.websocket("/run")
+@app.websocket("/api/interpreter/run")
 async def run(websocket: WebSocket):
     ws_exceptions = WebSocketDisconnect, ConnectionClosedError
 

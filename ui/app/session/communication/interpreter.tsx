@@ -1,7 +1,18 @@
 export default class Interpreter {
   private ws: WebSocket | null = null;
+  private readonly interpreterUrl: string;
 
-  constructor(private readonly interpreterUrl: string) {}
+  constructor() {
+    this.interpreterUrl = process.env.NEXT_PUBLIC_INTERPRETER_URL ?? "";
+    if (this.interpreterUrl === "") {
+      try {
+        this.interpreterUrl = location.host;
+      } catch (e) {
+        this.interpreterUrl = "localhost";
+      }
+    }
+    this.interpreterUrl += "/api/interpreter";
+  }
 
   private connect(): Promise<void> {
     return new Promise((resolve, reject) => {
