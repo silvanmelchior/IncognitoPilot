@@ -1,7 +1,5 @@
 import React from "react";
 import { BiSend } from "react-icons/bi";
-import thinkingImg from "./thinking.gif";
-import Image from "next/image";
 
 export default function ChatInput({
   innerRef,
@@ -61,7 +59,7 @@ export default function ChatInput({
       </div>
       {llmAnimation && (
         <div className="absolute left-4 top-[-48px] z-10">
-          <Image src={thinkingImg} alt="thinking" priority width={57} />
+          <img src="/thinking.gif" alt="thinking" width={57} />
         </div>
       )}
     </div>
