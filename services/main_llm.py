@@ -19,7 +19,7 @@ class Request(BaseModel):
     history: list[Message]
 
 
-@app.websocket("/chat")
+@app.websocket("/api/llm/chat")
 async def chat(websocket: WebSocket):
     ws_exceptions = WebSocketDisconnect, ConnectionClosedError
 

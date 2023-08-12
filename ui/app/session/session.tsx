@@ -13,13 +13,9 @@ import { Header } from "@/app/session/chat/header";
 import Brand from "@/app/session/chat/brand";
 
 export default function Session({
-  interpreterUrl,
-  llmUrl,
   refreshSession,
   version,
 }: {
-  interpreterUrl: string;
-  llmUrl: string;
   refreshSession: () => void;
   version: string;
 }) {
@@ -36,7 +32,7 @@ export default function Session({
   const chatInputRef = React.useRef<HTMLTextAreaElement | null>(null);
   const interpreterRef = React.useRef<Interpreter | null>(null);
   if (interpreterRef.current === null) {
-    interpreterRef.current = new Interpreter(interpreterUrl);
+    interpreterRef.current = new Interpreter();
   }
 
   const code = history.findLast((msg) => msg.code !== undefined)?.code ?? null;
@@ -60,7 +56,6 @@ export default function Session({
       interpreterRef.current!,
       setChatRoundState,
       setCodeResult,
-      llmUrl,
     );
     chatRound
       .run(message)
