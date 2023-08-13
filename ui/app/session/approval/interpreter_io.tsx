@@ -1,4 +1,6 @@
 import React from "react";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { Approver } from "@/app/session/approval/approver";
 import Running from "@/app/session/approval/running";
 import useScroller from "@/app/helper/scroller";
@@ -11,6 +13,7 @@ export default function InterpreterIO({
   autoApprove,
   disabled,
   busy,
+  language,
 }: {
   title: string;
   content: string | null;
@@ -19,6 +22,7 @@ export default function InterpreterIO({
   autoApprove: boolean;
   disabled: boolean;
   busy: boolean;
+  language: string;
 }) {
   const scrollRef = useScroller(content);
 
@@ -28,12 +32,24 @@ export default function InterpreterIO({
       <div
         className={`flex-1 ${
           busy ? "bg-neutral-100" : "bg-neutral-50"
-        } whitespace-pre overflow-auto h-0 font-mono mt-2 p-2 ${
+        } overflow-auto h-0 mt-2 ${
           askApprove ? "border-red-400" : "border-transparent"
         } border-2`}
         ref={scrollRef}
       >
-        {busy ? <Running /> : content}
+        {busy ? (
+          <div className="m-2">
+            <Running />
+          </div>
+        ) : (
+          <SyntaxHighlighter
+            language={language}
+            style={docco}
+            className="!overflow-x-visible"
+          >
+            {content ?? ""}
+          </SyntaxHighlighter>
+        )}
       </div>
       <div className="flex justify-end items-center my-2">
         <div>

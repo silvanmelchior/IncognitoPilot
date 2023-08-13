@@ -122,6 +122,7 @@ export default function Session({
               approver={approverIn}
               disabled={error !== null}
               busy={false}
+              language="python"
             />
           </div>
         </div>
@@ -135,6 +136,7 @@ export default function Session({
               approver={approverOut}
               disabled={error !== null}
               busy={chatRoundState === "waiting for interpreter"}
+              language="text"
             />
           </div>
         </div>
