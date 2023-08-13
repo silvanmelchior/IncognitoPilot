@@ -42,15 +42,20 @@ export default function InterpreterIO({
           />{" "}
           auto-approve
         </div>
-        <div className="ml-4">
-          <button
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-100 text-white disabled:text-gray-300 rounded-md"
-            onClick={approver.approve}
-            disabled={!askApprove || disabled}
-          >
-            Approve
-          </button>
-        </div>
+        <button
+          className="ml-4 px-4 py-2 bg-blue-400 hover:bg-blue-500 disabled:bg-gray-100 text-white disabled:text-gray-300 rounded-md"
+          onClick={() => approver.approve(false)}
+          disabled={!askApprove || disabled}
+        >
+          Reject
+        </button>
+        <button
+          className="ml-2 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-100 text-white disabled:text-gray-300 rounded-md"
+          onClick={() => approver.approve(true)}
+          disabled={!askApprove || disabled}
+        >
+          Approve
+        </button>
       </div>
     </div>
   );

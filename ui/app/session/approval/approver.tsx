@@ -1,7 +1,7 @@
 import React from "react";
 
 export class Approver {
-  private resolveHandler: ((value: void) => void) | null = null;
+  private resolveHandler: ((result: boolean) => void) | null = null;
 
   constructor(
     private autoApprove: boolean,
@@ -12,23 +12,21 @@ export class Approver {
   setAutoApprove = (autoApprove: boolean) => {
     this.autoApprove = autoApprove;
     this._setAutoApprove(autoApprove);
-    if (this.resolveHandler !== null) {
-      this.approve();
-    }
+    this.approve(true);
   };
 
-  approve = () => {
+  approve = (approval: boolean) => {
     if (this.resolveHandler !== null) {
       this.setAskApprove(false);
-      this.resolveHandler();
+      this.resolveHandler(approval);
       this.resolveHandler = null;
     }
   };
 
   getApproval = () => {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<boolean>((resolve, reject) => {
       if (this.autoApprove) {
-        resolve();
+        resolve(true);
       } else {
         this.resolveHandler = resolve;
         this.setAskApprove(true);

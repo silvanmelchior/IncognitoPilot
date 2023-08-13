@@ -62,9 +62,15 @@ export class ChatRound {
     for (; round < 10; round++) {
       const code = response.code;
       if (code !== undefined) {
-        await this.approveIn(code);
-        const result = await this.executeCode(code);
-        await this.approveOut(result);
+        const approvedIn = await this.approveIn(code);
+        let result = "ERROR: User did not approve code execution!";
+        if (approvedIn) {
+          const resultCode = await this.executeCode(code);
+          const approvedOut = await this.approveOut(resultCode);
+          if (approvedOut) {
+            result = resultCode;
+          }
+        }
         response = await this.sendResult(result);
       } else {
         this.setState("not active");
@@ -78,7 +84,7 @@ export class ChatRound {
 
   private approveIn = async (code: string) => {
     this.setState("waiting for approval");
-    await this.approverIn.getApproval();
+    return await this.approverIn.getApproval();
   };
 
   private executeCode = async (code: string): Promise<string> => {
@@ -94,8 +100,9 @@ export class ChatRound {
       : result;
     this.setCodeResult(resultText);
     if (!emptyAutoApprove) {
-      await this.approverOut.getApproval();
+      return await this.approverOut.getApproval();
     }
+    return true;
   };
 
   private sendResult = async (result: string) => {
