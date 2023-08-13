@@ -78,13 +78,19 @@ export default function Session({
           showNew={history.length > 0}
         />
         <div className="flex-1 h-0 overflow-y-auto px-8 flex flex-col w-full max-w-6xl">
-          {history.length === 0 ? <Brand /> : <ChatHistory history={history} />}
+          {history.length === 0 ? (
+            <Brand />
+          ) : (
+            <ChatHistory
+              history={history}
+              thinking={chatRoundState === "waiting for model"}
+            />
+          )}
         </div>
         <div className="px-16 mt-8 mb-4 w-full max-w-4xl">
           <ChatInput
             innerRef={chatInputRef}
             disabled={chatRoundState !== "not active" || error !== null}
-            llmAnimation={chatRoundState === "waiting for model"}
             onMessage={startChatRound}
           />
         </div>
