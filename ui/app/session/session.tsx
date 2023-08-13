@@ -11,6 +11,7 @@ import {
 } from "@/app/session/communication/chat_round";
 import { Header } from "@/app/session/chat/header";
 import Brand from "@/app/session/chat/brand";
+import useScroller from "@/app/helper/scroller";
 
 export default function Session({
   refreshSession,
@@ -65,6 +66,8 @@ export default function Session({
       });
   };
 
+  const scrollRef = useScroller(history);
+
   return (
     <div className="relative h-full bg-blue-50 overflow-x-hidden">
       <div
@@ -77,7 +80,10 @@ export default function Session({
           onNew={refreshSession}
           showNew={history.length > 0}
         />
-        <div className="flex-1 h-0 overflow-y-auto px-8 flex flex-col w-full max-w-6xl">
+        <div
+          className="flex-1 h-0 overflow-y-auto px-8 flex flex-col w-full max-w-6xl"
+          ref={scrollRef}
+        >
           {history.length === 0 ? (
             <Brand />
           ) : (

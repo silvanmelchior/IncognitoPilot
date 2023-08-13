@@ -1,6 +1,7 @@
 import React from "react";
 import { Approver } from "@/app/session/approval/approver";
 import Running from "@/app/session/approval/running";
+import useScroller from "@/app/helper/scroller";
 
 export default function InterpreterIO({
   title,
@@ -19,6 +20,8 @@ export default function InterpreterIO({
   disabled: boolean;
   busy: boolean;
 }) {
+  const scrollRef = useScroller(content);
+
   return (
     <div className="h-full flex flex-col">
       <div className="text-xl mt-2 text-blue-400">{title}</div>
@@ -28,6 +31,7 @@ export default function InterpreterIO({
         } whitespace-pre overflow-auto h-0 font-mono mt-2 p-2 ${
           askApprove ? "border-red-400" : "border-transparent"
         } border-2`}
+        ref={scrollRef}
       >
         {busy ? <Running /> : content}
       </div>

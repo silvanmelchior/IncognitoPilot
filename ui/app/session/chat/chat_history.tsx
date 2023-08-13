@@ -9,14 +9,6 @@ export default function ChatHistory({
   history: Message[];
   thinking: boolean;
 }) {
-  const bottomRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
-  }, [history]);
-
   const historyFiltered = history.filter(
     (msg, idx) =>
       msg.role === "user" ||
@@ -59,7 +51,6 @@ export default function ChatHistory({
           )}
         </div>
       ))}
-      <div ref={bottomRef} />
     </div>
   );
 }
