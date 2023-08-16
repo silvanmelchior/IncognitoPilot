@@ -21,7 +21,7 @@ and much more!
 
 ## :bulb: Demo
 
-TODO: VIDEO
+https://github.com/silvanmelchior/IncognitoPilot/assets/6033305/05b0a874-6f76-4d22-afca-36c11f90b1ff
 
 The video shows GPT-4 in action.
 While your conversation and approved code results are sent to OpenAI, your **data is kept locally** on your machine.
