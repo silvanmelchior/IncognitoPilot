@@ -2,12 +2,14 @@
     <img src="https://github.com/silvanmelchior/IncognitoPilot/blob/main/docs/title.png" alt="logo" style="width: 75%">
 </p>
 
-<p align="center"><em>Your local AI code interpreter</em></p>
+<p align="center"><em>An AI code interpreter for sensitive data, powered by GPT-4 or Llama 2.</em></p>
 
-**Incognito Pilot** combines a large language model with a Python interpreter, so it can run code and execute tasks for you.
-It is similar to **ChatGPT Code Interpreter**, but the interpreter runs locally.
-This allows you to work with sensitive data without uploading it to the cloud.
-To still be able to use powerful models available via API only (like GPT-4), there is an approval mechanism in the UI, which separates your local data from the remote services.
+**Incognito Pilot** combines a Large Language Model (LLM) with a Python interpreter, so it can run code and execute tasks for you.
+It is similar to **ChatGPT Code Interpreter**, but the interpreter runs **locally** and it can use open-source models like **Llama 2**.
+
+**Incognito Pilot** allows you to work with **sensitive data** without uploading it to the cloud.
+Either you use a local LLM (like Llama 2), or an API (like GPT-4).
+For the latter case, there is an **approval mechanism** in the UI, which separates your local data from the remote services.
 
 With **Incognito Pilot**, you can:
 
@@ -16,13 +18,14 @@ With **Incognito Pilot**, you can:
 - automate tasks, like renaming all files in a directory
 
 and much more!
-It runs on every hardware, so you can for example analyze large datasets on powerful machines.
-We also plan to support more models like Llama 2 in the future.
 
-<p align="center">
-    <img src="https://github.com/silvanmelchior/IncognitoPilot/blob/main/docs/screenshot.png" alt="screenshot" style="width: 75%"><br>
-    <em>Screenshot of Incognito Pilot v1.0.0</em>
-</p>
+## :bulb: Demo
+
+TODO: VIDEO
+
+The video shows GPT-4 in action.
+While your conversation and approved code results are sent to OpenAI, your **data is kept locally** on your machine.
+And you can go even further and use Llama 2 to be fully locally.
 
 ## :package: Installation
 
