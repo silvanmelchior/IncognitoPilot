@@ -23,11 +23,19 @@ and much more!
 
 https://github.com/silvanmelchior/IncognitoPilot/assets/6033305/05b0a874-6f76-4d22-afca-36c11f90b1ff
 
-The video shows GPT-4 in action.
+The video shows Incognito Pilot with GPT-4.
 While your conversation and approved code results are sent to OpenAI, your **data is kept locally** on your machine.
-And you can go even further and use Llama 2 to be fully locally.
+And you can go even further and use Llama 2 to have everything running on your machine.
 
-## :package: Installation
+## :package: Installation (GPT via OpenAI API)
+
+This section shows how to install **Incognito Pilot** using a GPT model via OpenAI's API. For
+
+- **Llama 2**, check [Installation for Llama 2](/docs/INSTALLATION_LLAMA.md) instead, and for
+- **GPT on Azure**, check [Installation with Azure](/docs/INSTALLATION_AZURE.md) instead.
+- If you don't have docker, you can install **Incognito Pilot** on your system directly, using the development setup (see below).
+
+Follow these steps:
 
 1. Install [docker](https://www.docker.com/).
 2. Create an empty folder somewhere on your system.
@@ -41,7 +49,7 @@ And you can go even further and use Llama 2 to be fully locally.
 
 ```shell
 docker run -i -t \
-  -p 3030:3030 -p 3031:3031 \
+  -p 3030:80 \
   -e OPENAI_API_KEY="sk-your-api-key" \
   -v /home/user/ipilot:/mnt/data \
   silvanmelchior/incognito-pilot:latest-slim
@@ -49,13 +57,10 @@ docker run -i -t \
 
 You can now visit http://localhost:3030 and should see the **Incognito Pilot** interface.
 
-Some final remarks:
+It's also possible to run **Incognito Pilot** with the free trial credits of OpenAI, without adding a credit card.
+At the moment, this does not include GPT-4 however, so see below how to change the model to GPT-3.5.
 
-- If you don't have docker, you can install **Incognito Pilot** on your system directly, using the development setup (see below).
-- You can also run **Incognito Pilot** with the free trial credits of OpenAI, without adding a credit card.
-  At the moment, this does not include GPT-4 however, so see below how to change the model to GPT-3.5.
-
-## :rocket: Getting started
+## :rocket: Getting started (GPT)
 
 In the **Incognito Pilot** interface, you will see a chat interface, with which you can interact with the model.
 Let's try it out!
@@ -78,8 +83,6 @@ To change this, head back to the console and press Ctrl-C to stop the container.
 Now re-run the command, but remove the `-slim` suffix from the image.
 This will download a much larger version, equipped with [many packages](/docker/requirements_full.txt).
 
-## :gear: Settings
-
 ### Change model
 
 To use another model than the default one (GPT-4), set the environment variable `LLM`.
@@ -89,32 +92,40 @@ OpenAI's GPT models have the prefix `gpt:`, so to use GPT-3.5 for example (the o
 -e LLM="gpt:gpt-3.5-turbo"
 ```
 
-Please note that GPT-4 is considerably better in this interpreter setup than GPT-3.5.
+Please note that GPT-4 is considerably better in the interpreter setup than GPT-3.5.
+
+## :gear: Settings
 
 ### Change port
 
-Per default, the UI is served on port 3030 and contacts the interpreter at port 3031.
-This can be changed to any ports using the port mapping of docker.
-However, the new port for the interpreter also needs to be communicated to the UI, using the environment variable `INTERPRETER_URL`.
-For example, to serve the UI on port 8080 and the interpreter on port 8081, run the following:
+To serve the UI at a different port than 3030, just expose the internal port 80 to a different one, for example 8080:
 
 ```shell
 docker run -i -t \
-  -p 8080:3030 -p 8081:3031 \
-  -e OPENAI_API_KEY="sk-your-api-key" \
-  -e INTERPRETER_PORT=8081 \
-  -v /home/user/ipilot:/mnt/data \
+  -p 8080:80 \
+  ... \
   silvanmelchior/incognito-pilot
 ```
 
-### Further settings
+### Timeout
 
-The following further settings are available
+Per default, the Python interpreter stops after 30 seconds.
+To change this, set the environment variable `INTERPRETER_TIMEOUT`.
+For 2 minutes for example, add the following to the docker run command:
 
-- Per default, the Python interpreter stops after 30 seconds.
-  To change this, set the environment variable `INTERPRETER_TIMEOUT`. 
-- To automatically start **Incognito Pilot** with docker / at startup, remove the remove `-i -t` from the run command and add `--restart always`.
-  Together with a bookmark of the UI URL, you'll have **Incognito Pilot** at your fingertips whenever you need it.
+```shell
+-e INTERPRETER_TIMEOUT="120"
+```
+
+### Autostart
+
+To automatically start **Incognito Pilot** with docker / at startup, remove the `-i -t` from the run command and add the following:
+
+```shell
+--restart always
+```
+
+Together with a bookmark of the UI URL, you'll have **Incognito Pilot** at your fingertips whenever you need it.
 
 ## :toolbox: Own dependencies
 
@@ -149,9 +160,7 @@ Then run the container like this:
 
 ```shell
 docker run -i -t \
-  -p 3030:3030 -p 3031:3031 \
-  -e OPENAI_API_KEY="sk-your-api-key" \
-  -v /home/user/ipilot:/mnt/data \
+  ... \
   incognito-pilot-custom
 ```
 
