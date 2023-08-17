@@ -81,7 +81,9 @@ Once the container shows a success message, you are ready for the next step.
 
 Visit http://localhost:8080/info.
 You should see a JSON with model information.
-We will need the value for *max_total_tokens* in the next command.
+Check out the value for *max_total_tokens*.
+It tells you how many tokens fit in the context for this model on your system.
+**Incognito Pilot** needs this information to not send too long messages to the service.
 
 Now, just run the following command (replace your directories and max tokens):
 
