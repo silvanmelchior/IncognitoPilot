@@ -17,13 +17,14 @@ Always be careful when approving any code!
 
 Prerequisites:
 
-- OpenAI API key
 - Cloned repository
 - Installed [python](https://www.python.org/)
 - Installed [poetry](https://python-poetry.org/)
 - Installed [node.js](https://nodejs.org/)
 
-### Interpreter
+Also have a look at the overall [architecture](/docs/architecture.png) first.
+
+### Services
 
 First, create a venv somewhere on your system, where ipython will run your code:
 
@@ -35,15 +36,25 @@ pip install ipython
 pip install ...  # install whatever packages you like
 ```
 
-Now open a terminal in the *interpreter* folder and run the following:
+Now open a terminal in the *services* folder and run the following:
 
 ```shell
 poetry install
 poetry shell
 export IPYTHON_PATH=/home/user/venv_interpreter/bin/ipython
 export WORKING_DIRECTORY=/home/user/ipilot
-uvicorn main:app --reload
+uvicorn main_interpreter:app --reload --port 8000
 ```
+
+Open a second terminal in the *services* folder and run the following:
+
+```shell
+poetry shell
+export OPENAI_API_KEY=sk-your-api-key
+uvicorn main_llm:app --reload --port 8001
+```
+
+If you want to use something else than OpenAI, adjust the env-variables as explained in the [Readme](/README.md).
 
 ### UI
 
@@ -51,8 +62,8 @@ Open a terminal in the *ui* folder and run the following:
 
 ```shell
 npm install
-export INTERPRETER_URL=localhost:8000
-export OPENAI_API_KEY=sk-your-api-key
+export NEXT_PUBLIC_INTERPRETER_URL=localhost:8000
+export NEXT_PUBLIC_LLM_URL=localhost:8001
 npm run dev
 ```
 

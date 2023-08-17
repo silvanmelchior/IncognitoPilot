@@ -1,10 +1,9 @@
 import React from "react";
 
 export class Approver {
-  private resolveHandler: ((value: void) => void) | null = null;
+  private resolveHandler: ((result: boolean) => void) | null = null;
 
   constructor(
-    private readonly setContent: (content: string) => void,
     private autoApprove: boolean,
     private readonly _setAutoApprove: (autoApprove: boolean) => void,
     private readonly setAskApprove: (askApprove: boolean) => void,
@@ -13,24 +12,21 @@ export class Approver {
   setAutoApprove = (autoApprove: boolean) => {
     this.autoApprove = autoApprove;
     this._setAutoApprove(autoApprove);
-    if (this.resolveHandler !== null) {
-      this.approve();
-    }
+    this.approve(true);
   };
 
-  approve = () => {
+  approve = (approval: boolean) => {
     if (this.resolveHandler !== null) {
       this.setAskApprove(false);
-      this.resolveHandler();
+      this.resolveHandler(approval);
       this.resolveHandler = null;
     }
   };
 
-  getApproval = (content: string, tmpAutoApprove: boolean = false) => {
-    this.setContent(content);
-    return new Promise<void>((resolve, reject) => {
-      if (this.autoApprove || tmpAutoApprove) {
-        resolve();
+  getApproval = () => {
+    return new Promise<boolean>((resolve, reject) => {
+      if (this.autoApprove) {
+        resolve(true);
       } else {
         this.resolveHandler = resolve;
         this.setAskApprove(true);
@@ -39,12 +35,11 @@ export class Approver {
   };
 }
 
-export function useApprover(): [Approver, string | null, boolean, boolean] {
-  const [content, setContent] = React.useState<string | null>(null);
+export function useApprover(): [Approver, boolean, boolean] {
   const [askApprove, setAskApprove] = React.useState<boolean>(false);
   const [autoApprove, setAutoApprove] = React.useState<boolean>(false);
   const approverRef = React.useRef(
-    new Approver(setContent, autoApprove, setAutoApprove, setAskApprove),
+    new Approver(autoApprove, setAutoApprove, setAskApprove),
   );
-  return [approverRef.current, content, askApprove, autoApprove];
+  return [approverRef.current, askApprove, autoApprove];
 }

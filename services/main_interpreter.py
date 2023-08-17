@@ -1,34 +1,18 @@
-import os
-import sys
 from pathlib import Path
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import WebSocket, WebSocketDisconnect
+from websockets.exceptions import ConnectionClosedError
 
 from interpreter import IPythonInterpreter
+from utils import get_app, get_env_var
 
-app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
-TIMEOUT = (
-    int(os.environ["INTERPRETER_TIMEOUT"])
-    if "INTERPRETER_TIMEOUT" in os.environ
-    else 30
-)
+app = get_app()
+
+WORKING_DIRECTORY = Path(get_env_var("WORKING_DIRECTORY"))
+IPYTHON_PATH = Path(get_env_var("IPYTHON_PATH"))
+TIMEOUT = int(get_env_var("INTERPRETER_TIMEOUT", "30"))
 TIMEOUT_MESSAGE = "ERROR: TIMEOUT REACHED"
-
-try:
-    WORKING_DIRECTORY = Path(os.environ["WORKING_DIRECTORY"])
-    IPYTHON_PATH = Path(os.environ["IPYTHON_PATH"])
-except KeyError:
-    print("ERROR: Missing environment variables, exiting...", file=sys.stderr)
-    sys.exit(1)
 
 
 def get_interpreter() -> IPythonInterpreter:
@@ -41,15 +25,29 @@ def get_interpreter() -> IPythonInterpreter:
     return interpreter
 
 
-@app.websocket("/run")
+@app.websocket("/api/interpreter/run")
 async def run(websocket: WebSocket):
-    await websocket.accept()
+    ws_exceptions = WebSocketDisconnect, ConnectionClosedError
+
+    try:
+        await websocket.accept()
+    except ws_exceptions:
+        return
+
     try:
         interpreter = get_interpreter()
     except Exception as e:
-        await websocket.send_text(str(e))
+        try:
+            await websocket.send_text(str(e))
+        except ws_exceptions:
+            return
         return
-    await websocket.send_text("_ready_")
+
+    try:
+        await websocket.send_text("_ready_")
+    except ws_exceptions:
+        interpreter.stop()
+        return
 
     try:
         while True:
@@ -62,7 +60,7 @@ async def run(websocket: WebSocket):
             except Exception as e:
                 response = f"_error_ {e}"
             await websocket.send_text(response)
-    except WebSocketDisconnect:
+    except ws_exceptions:
         pass
 
     interpreter.stop()

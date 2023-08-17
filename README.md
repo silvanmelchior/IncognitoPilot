@@ -2,29 +2,40 @@
     <img src="https://github.com/silvanmelchior/IncognitoPilot/blob/main/docs/title.png" alt="logo" style="width: 75%">
 </p>
 
-<p align="center"><em>Your local AI code interpreter</em></p>
+<p align="center"><em>An AI code interpreter for sensitive data, powered by GPT-4 or Llama 2.</em></p>
 
-**Incognito Pilot** combines a large language model with a Python interpreter, so it can run code and execute tasks for you.
-It is similar to **ChatGPT Code Interpreter**, but the interpreter runs locally.
-This allows you to work with sensitive data without uploading it to the cloud.
-To still be able to use powerful models available via API only (like GPT-4), there is an approval mechanism in the UI, which separates your local data from the remote services.
+**Incognito Pilot** combines a Large Language Model (LLM) with a Python interpreter, so it can run code and execute tasks for you.
+It is similar to **ChatGPT Code Interpreter**, but the interpreter runs **locally** and it can use open-source models like **Llama 2**.
+
+**Incognito Pilot** allows you to work with **sensitive data** without uploading it to the cloud.
+Either you use a local LLM (like Llama 2), or an API (like GPT-4).
+For the latter case, there is an **approval mechanism** in the UI, which separates your local data from the remote services.
 
 With **Incognito Pilot**, you can:
-
-- analyse data and create visualizations
-- convert your files, e.g. a video to a gif
-- automate tasks, like renaming all files in a directory
+- :white_check_mark: analyse data and create visualizations
+- :white_check_mark: convert your files, e.g. a video to a gif
+- :white_check_mark: **access the internet** to e.g. download data
 
 and much more!
-It runs on every hardware, so you can for example analyze large datasets on powerful machines.
-We also plan to support more models like Llama 2 in the future.
 
-<p align="center">
-    <img src="https://github.com/silvanmelchior/IncognitoPilot/blob/main/docs/screenshot.png" alt="screenshot" style="width: 75%"><br>
-    <em>Screenshot of Incognito Pilot v1.0.0</em>
-</p>
+## :bulb: Demo
 
-## :package: Installation
+https://github.com/silvanmelchior/IncognitoPilot/assets/6033305/05b0a874-6f76-4d22-afca-36c11f90b1ff
+
+The video shows Incognito Pilot with GPT-4.
+While your conversation and approved code results are sent to OpenAI's API, your **data is kept locally** on your machine.
+The interpreter is running locally as well and processes your data right there.
+And you can go even further and use Llama 2 to have everything running on your machine.
+
+## :package: Installation (GPT via OpenAI API)
+
+This section shows how to install **Incognito Pilot** using a GPT model via OpenAI's API. For
+
+- **Llama 2**, check [Installation for Llama 2](/docs/INSTALLATION_LLAMA.md) instead, and for
+- **GPT on Azure**, check [Installation with Azure](/docs/INSTALLATION_AZURE.md) instead.
+- If you don't have docker, you can install **Incognito Pilot** on your system directly, using the development setup (see below).
+
+Follow these steps:
 
 1. Install [docker](https://www.docker.com/).
 2. Create an empty folder somewhere on your system.
@@ -38,7 +49,7 @@ We also plan to support more models like Llama 2 in the future.
 
 ```shell
 docker run -i -t \
-  -p 3030:3030 -p 3031:3031 \
+  -p 3030:80 \
   -e OPENAI_API_KEY="sk-your-api-key" \
   -v /home/user/ipilot:/mnt/data \
   silvanmelchior/incognito-pilot:latest-slim
@@ -46,13 +57,10 @@ docker run -i -t \
 
 You can now visit http://localhost:3030 and should see the **Incognito Pilot** interface.
 
-Some final remarks:
+It's also possible to run **Incognito Pilot** with the free trial credits of OpenAI, without adding a credit card.
+At the moment, this does not include GPT-4 however, so see below how to change the model to GPT-3.5.
 
-- If you don't have docker, you can install **Incognito Pilot** on your system directly, using the development setup (see below).
-- You can also run **Incognito Pilot** with the free trial credits of OpenAI, without adding a credit card.
-  At the moment, this does not include GPT-4 however, so see below how to change the model to GPT-3.5.
-
-## :rocket: Getting started
+## :rocket: Getting started (GPT)
 
 In the **Incognito Pilot** interface, you will see a chat interface, with which you can interact with the model.
 Let's try it out!
@@ -68,14 +76,15 @@ Let's try it out!
    After the approval, the model will confirm you the execution.
    Check your working directory now (e.g. */home/user/ipilot*): You should see the file!
 
-Now you should be ready to use **Incognito Pilot** for your own tasks.
+Now you should be ready to use **Incognito Pilot** for your own tasks. Just remember:
+- Everything you type or every code result you approve is sent to the OpenAI / Azure API
+- Your data stays and is processed locally
+
 One more thing: The version you just used has nearly no packages shipped with the Python interpreter.
 This means, things like reading images or Excel files will not work.
 To change this, head back to the console and press Ctrl-C to stop the container.
 Now re-run the command, but remove the `-slim` suffix from the image.
 This will download a much larger version, equipped with [many packages](/docker/requirements_full.txt).
-
-## :gear: Settings
 
 ### Change model
 
@@ -86,32 +95,40 @@ OpenAI's GPT models have the prefix `gpt:`, so to use GPT-3.5 for example (the o
 -e LLM="gpt:gpt-3.5-turbo"
 ```
 
-Please note that GPT-4 is considerably better in this interpreter setup than GPT-3.5.
+Please note that GPT-4 is considerably better in the interpreter setup than GPT-3.5.
+
+## :gear: Settings
 
 ### Change port
 
-Per default, the UI is served on port 3030 and contacts the interpreter at port 3031.
-This can be changed to any ports using the port mapping of docker.
-However, the new port for the interpreter also needs to be communicated to the UI, using the environment variable `INTERPRETER_URL`.
-For example, to serve the UI on port 8080 and the interpreter on port 8081, run the following:
+To serve the UI at a different port than 3030, just expose the internal port 80 to a different one, for example 8080:
 
 ```shell
 docker run -i -t \
-  -p 8080:3030 -p 8081:3031 \
-  -e OPENAI_API_KEY="sk-your-api-key" \
-  -e INTERPRETER_PORT=8081 \
-  -v /home/user/ipilot:/mnt/data \
+  -p 8080:80 \
+  ... \
   silvanmelchior/incognito-pilot
 ```
 
-### Further settings
+### Timeout
 
-The following further settings are available
+Per default, the Python interpreter stops after 30 seconds.
+To change this, set the environment variable `INTERPRETER_TIMEOUT`.
+For 2 minutes for example, add the following to the docker run command:
 
-- Per default, the Python interpreter stops after 30 seconds.
-  To change this, set the environment variable `INTERPRETER_TIMEOUT`. 
-- To automatically start **Incognito Pilot** with docker / at startup, remove the remove `-i -t` from the run command and add `--restart always`.
-  Together with a bookmark of the UI URL, you'll have **Incognito Pilot** at your fingertips whenever you need it.
+```shell
+-e INTERPRETER_TIMEOUT="120"
+```
+
+### Autostart
+
+To automatically start **Incognito Pilot** with docker / at startup, remove the `-i -t` from the run command and add the following:
+
+```shell
+--restart always
+```
+
+Together with a bookmark of the UI URL, you'll have **Incognito Pilot** at your fingertips whenever you need it.
 
 ## :toolbox: Own dependencies
 
@@ -146,11 +163,41 @@ Then run the container like this:
 
 ```shell
 docker run -i -t \
-  -p 3030:3030 -p 3031:3031 \
-  -e OPENAI_API_KEY="sk-your-api-key" \
-  -v /home/user/ipilot:/mnt/data \
+  ... \
   incognito-pilot-custom
 ```
+
+## :question: FAQs
+
+### Is it as good as ChatGPT Code Interpreter?
+
+No, it has its limits.
+The tradeoff between privacy and capabilities is not an easy one in this case.
+For things like images, it is as powerful as ChatGPT code interpreter, because it doesn't need to know about the content of the image to edit it.
+But for things like spreadsheets, if ChatGPT doesn't see the content, it has to guess for example the data format from the header, which can go wrong.
+
+However, in certain aspects, it's even better than ChatGPT code interpreter:
+The interpreter has internet access, allowing for a bunch of new tasks which were not possible before.
+Also, you can run the interpreter on any machine, including very powerful ones, so you can solve much larger tasks than with ChatGPT code interpreter.
+
+### Why not just use ChatGPT to generate the code and run it myself?
+
+You can of course do this. There are quite some advantages of using **Incognito Pilot** however:
+
+- Incognito Pilot can run code in multiple rounds (e.g. first getting the file name of a csv, then the structure, and then analyze the content).
+  It can even correct itself, seeing the stack trace of its failed execution.
+  You can of course also copy back and forth code and result to achieve all of this manually, but it gets cumbersome quite quickly.
+- You have tons of pre-installed dependencies in Incognito Pilot
+- The code runs in a sandbox, protecting your computer
+
+### How can it be private if you use public cloud APIs?
+
+Whatever you type and all code results you approve are indeed not private, in the sense that they are sent to the cloud API.
+Your data however stays local.
+The interpreter runs locally as well, processing your data right where it is.
+For certain things, you will have to tell the model something about your data (e.g. the file-name of structure),
+but it usually is meta-data which you actively approve in the UI and not the actual data.
+At every step in the execution, you can just reject that something is sent to the API.
 
 ## :house: Architecture
 

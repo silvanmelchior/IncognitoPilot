@@ -1,9 +1,9 @@
 import React from "react";
-import { Message } from "@/llm/base";
+import { Message } from "@/app/session/communication/message";
 import ChatInput from "@/app/session/chat/chat_input";
 import ChatHistory from "@/app/session/chat/chat_history";
 import InterpreterIO from "@/app/session/approval/interpreter_io";
-import { Interpreter } from "@/app/session/communication/api_calls";
+import Interpreter from "@/app/session/communication/interpreter";
 import { useApprover } from "@/app/session/approval/approver";
 import {
   ChatRound,
@@ -11,13 +11,12 @@ import {
 } from "@/app/session/communication/chat_round";
 import { Header } from "@/app/session/chat/header";
 import Brand from "@/app/session/chat/brand";
+import useScroller from "@/app/helper/scroller";
 
 export default function Session({
-  interpreterUrl,
   refreshSession,
   version,
 }: {
-  interpreterUrl: string;
   refreshSession: () => void;
   version: string;
 }) {
@@ -27,20 +26,22 @@ export default function Session({
 
   const [chatRoundState, setChatRoundState] =
     React.useState<ChatRoundState>("not active");
-  const [approverIn, code, askApproveIn, autoApproveIn] = useApprover();
-  const [approverOut, result, askApproveOut, autoApproveOut] = useApprover();
+  const [approverIn, askApproveIn, autoApproveIn] = useApprover();
+  const [approverOut, askApproveOut, autoApproveOut] = useApprover();
 
+  const [codeResult, setCodeResult] = React.useState<string | null>(null);
   const chatInputRef = React.useRef<HTMLTextAreaElement | null>(null);
   const interpreterRef = React.useRef<Interpreter | null>(null);
   if (interpreterRef.current === null) {
-    interpreterRef.current = new Interpreter(interpreterUrl);
+    interpreterRef.current = new Interpreter();
   }
 
+  const code = history.findLast((msg) => msg.code !== undefined)?.code ?? null;
   React.useEffect(() => {
-    if (chatRoundState === "waiting for approval") {
+    if (code !== null) {
       setShowIO(true);
     }
-  }, [chatRoundState]);
+  }, [code]);
 
   const focusChatInput = () => {
     setTimeout(() => chatInputRef.current && chatInputRef.current.focus(), 100);
@@ -55,6 +56,7 @@ export default function Session({
       approverOut,
       interpreterRef.current!,
       setChatRoundState,
+      setCodeResult,
     );
     chatRound
       .run(message)
@@ -63,6 +65,8 @@ export default function Session({
         setError(e.message);
       });
   };
+
+  const scrollRef = useScroller(history);
 
   return (
     <div className="relative h-full bg-blue-50 overflow-x-hidden">
@@ -76,14 +80,23 @@ export default function Session({
           onNew={refreshSession}
           showNew={history.length > 0}
         />
-        <div className="flex-1 h-0 overflow-y-auto px-8 flex flex-col w-full max-w-6xl">
-          {history.length === 0 ? <Brand /> : <ChatHistory history={history} />}
+        <div
+          className="flex-1 h-0 overflow-y-auto px-8 flex flex-col w-full max-w-6xl"
+          ref={scrollRef}
+        >
+          {history.length === 0 ? (
+            <Brand />
+          ) : (
+            <ChatHistory
+              history={history}
+              thinking={chatRoundState === "waiting for model"}
+            />
+          )}
         </div>
         <div className="px-16 mt-8 mb-4 w-full max-w-4xl">
           <ChatInput
             innerRef={chatInputRef}
             disabled={chatRoundState !== "not active" || error !== null}
-            llmAnimation={chatRoundState === "waiting for model"}
             onMessage={startChatRound}
           />
         </div>
@@ -109,6 +122,7 @@ export default function Session({
               approver={approverIn}
               disabled={error !== null}
               busy={false}
+              language="python"
             />
           </div>
         </div>
@@ -116,12 +130,13 @@ export default function Session({
           <div className="flex-1 h-0">
             <InterpreterIO
               title="Result"
-              content={result}
+              content={codeResult}
               askApprove={askApproveOut}
               autoApprove={autoApproveOut}
               approver={approverOut}
               disabled={error !== null}
               busy={chatRoundState === "waiting for interpreter"}
+              language="text"
             />
           </div>
         </div>
