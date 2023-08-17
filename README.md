@@ -24,7 +24,8 @@ and much more!
 https://github.com/silvanmelchior/IncognitoPilot/assets/6033305/05b0a874-6f76-4d22-afca-36c11f90b1ff
 
 The video shows Incognito Pilot with GPT-4.
-While your conversation and approved code results are sent to OpenAI, your **data is kept locally** on your machine.
+While your conversation and approved code results are sent to OpenAI's API, your **data is kept locally** on your machine.
+The interpreter is running locally as well and processes your data right there.
 And you can go even further and use Llama 2 to have everything running on your machine.
 
 ## :package: Installation (GPT via OpenAI API)
@@ -76,7 +77,10 @@ Let's try it out!
    After the approval, the model will confirm you the execution.
    Check your working directory now (e.g. */home/user/ipilot*): You should see the file!
 
-Now you should be ready to use **Incognito Pilot** for your own tasks.
+Now you should be ready to use **Incognito Pilot** for your own tasks. Just remember:
+- Everything you type or every code result you approve is sent to the OpenAI / Azure API
+- Your data stays and is processed locally
+
 One more thing: The version you just used has nearly no packages shipped with the Python interpreter.
 This means, things like reading images or Excel files will not work.
 To change this, head back to the console and press Ctrl-C to stop the container.
@@ -163,6 +167,38 @@ docker run -i -t \
   ... \
   incognito-pilot-custom
 ```
+
+## :question: FAQs
+
+### Is it as good as ChatGPT Code Interpreter?
+
+No, it has its limits.
+The tradeoff between privacy and capabilities is not an easy one in this case.
+For things like images, it is as powerful as ChatGPT code interpreter, because it doesn't need to know about the content of the image to edit it.
+But for things like spreadsheets, if ChatGPT doesn't see the content, it has to guess for example the data format from the header, which can go wrong.
+
+However, in certain aspects, it's even better than ChatGPT code interpreter:
+The interpreter has internet access, allowing for a bunch of new tasks which were not possible before.
+Also, you can run the interpreter on any machine, including very powerful ones, so you can solve much larger tasks than with ChatGPT code interpreter.
+
+### Why not just use ChatGPT to generate the code and run it myself?
+
+You can of course do this. There are quite some advantages of using **Incognito Pilot** however:
+
+- Incognito Pilot can run code in multiple rounds (e.g. first getting the file name of a csv, then the structure, and then analyze the content).
+  It can even correct itself, seeing the stack trace of its failed execution.
+  You can of course also copy back and forth code and result to achieve all of this manually, but it gets cumbersome quite quickly.
+- You have tons of pre-installed dependencies in Incognito Pilot
+- The code runs in a sandbox, protecting your computer
+
+### How can it be private if you use public cloud APIs?
+
+Whatever you type and all code results you approve are indeed not private, in the sense that they are sent to the cloud API.
+Your data however stays local.
+The interpreter runs locally as well, processing your data right where it is.
+For certain things, you will have to tell the model something about your data (e.g. the file-name of structure),
+but it usually is meta-data which you actively approve in the UI and not the actual data.
+At every step in the execution, you can just reject that something is sent to the API.
 
 ## :house: Architecture
 

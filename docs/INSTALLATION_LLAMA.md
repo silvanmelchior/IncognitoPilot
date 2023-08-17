@@ -38,6 +38,10 @@ docker run -i -t \
 You can of course also choose a [different model](https://replicate.com/blog/all-the-llamas), but the smaller ones are much less suited for this task.
 
 Now visit http://localhost:3030 and should see the **Incognito Pilot** interface.
+Before you continue, remember:
+- Everything you type or every code result you approve is sent to the Replicate API
+- Your data stays and is processed locally
+
 Does it work? Great, let's move to the [Getting started](#rocket-getting-started-llama-2) section.
 
 ## Text Generation Inference
@@ -93,6 +97,7 @@ docker run -i -t \
 ```
 
 Visit http://localhost:3030 and should see the **Incognito Pilot** interface.
+Congrats! You have a fully local setup, everything is running on your own system :partying_face:.
 
 ## :rocket: Getting started (Llama 2)
 
@@ -117,4 +122,4 @@ To change this, head back to the console and press Ctrl-C to stop the container.
 Now re-run the command, but remove the `-slim` suffix from the image.
 This will download a much larger version, equipped with [many packages](/docker/requirements_full.txt).
 
-Let's head back to the [Getting Started](/README.md#gear-settings) section.
+Let's head back to the [Settings](/README.md#gear-settings) section.
