@@ -12,10 +12,9 @@ Either you use a local LLM (like Llama 2), or an API (like GPT-4).
 For the latter case, there is an **approval mechanism** in the UI, which separates your local data from the remote services.
 
 With **Incognito Pilot**, you can:
-
-- analyse data and create visualizations
-- convert your files, e.g. a video to a gif
-- automate tasks, like renaming all files in a directory
+- :white_check_mark: analyse data and create visualizations
+- :white_check_mark: convert your files, e.g. a video to a gif
+- :white_check_mark: **access the internet** to e.g. download data
 
 and much more!
 
