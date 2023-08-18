@@ -2,6 +2,7 @@ from typing import Generator
 
 import openai
 from openai import OpenAIError
+from litellm import completion
 
 from llm.base import BaseLLM, LLMException
 from llm.types import Message, Response
@@ -17,7 +18,7 @@ class GPT(BaseLLM):
         messages = [msg_to_gpt_msg(msg) for msg in history]
 
         try:
-            chunk_generator = openai.ChatCompletion.create(
+            chunk_generator = completion(
                 **self._model_selection,
                 messages=messages,
                 temperature=0,
