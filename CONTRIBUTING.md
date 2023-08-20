@@ -43,6 +43,7 @@ poetry install
 poetry shell
 export IPYTHON_PATH=/home/user/venv_interpreter/bin/ipython
 export WORKING_DIRECTORY=/home/user/ipilot
+export ALLOWED_HOSTS="localhost:3000"
 uvicorn main_interpreter:app --reload --port 8000
 ```
 
@@ -51,6 +52,7 @@ Open a second terminal in the *services* folder and run the following:
 ```shell
 poetry shell
 export OPENAI_API_KEY=sk-your-api-key
+export ALLOWED_HOSTS="localhost:3000"
 uvicorn main_llm:app --reload --port 8001
 ```
 

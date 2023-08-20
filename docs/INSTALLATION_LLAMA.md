@@ -31,6 +31,7 @@ docker run -i -t \
   -p 3030:80 \
   -e LLM="llama-replicate:replicate/llama-2-70b-chat:2c1608e18606fad2812020dc541930f2d0495ce32eee50074220b87300bc16e1" \
   -e REPLICATE_API_KEY="your-replicate-api-key" \
+  -e ALLOWED_HOSTS="localhost:3030" \
   -v /home/user/ipilot:/mnt/data \
   silvanmelchior/incognito-pilot:latest-slim
 ```

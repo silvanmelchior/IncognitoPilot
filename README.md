@@ -51,6 +51,7 @@ Follow these steps:
 docker run -i -t \
   -p 3030:80 \
   -e OPENAI_API_KEY="sk-your-api-key" \
+  -e ALLOWED_HOSTS="localhost:3030" \
   -v /home/user/ipilot:/mnt/data \
   silvanmelchior/incognito-pilot:latest-slim
 ```
@@ -101,11 +102,13 @@ Please note that GPT-4 is considerably better in the interpreter setup than GPT-
 
 ### Change port
 
-To serve the UI at a different port than 3030, just expose the internal port 80 to a different one, for example 8080:
+To serve the UI at a different port than 3030, you can expose the internal port 80 to a different one, for example 8080.
+You should also change the allowed host variable in this case:
 
 ```shell
 docker run -i -t \
   -p 8080:80 \
+  -e ALLOWED_HOSTS="localhost:8080" \
   ... \
   silvanmelchior/incognito-pilot
 ```

@@ -19,6 +19,7 @@ docker run -i -t \
   -e LLM="gpt-azure:your-deployment-name" \
   -e AZURE_API_KEY="your-azure-openai-api-key" \
   -e AZURE_API_BASE="https://your-azure-openai-service-name.openai.azure.com/" \
+  -e ALLOWED_HOSTS="localhost:3030" \
   -v /home/user/ipilot:/mnt/data \
   silvanmelchior/incognito-pilot:latest-slim
 ```
