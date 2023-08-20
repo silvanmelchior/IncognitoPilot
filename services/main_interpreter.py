@@ -4,8 +4,7 @@ from fastapi import WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosedError
 
 from interpreter import IPythonInterpreter
-from utils import get_app, get_env_var
-
+from utils import get_app, get_env_var, verify_origin
 
 app = get_app()
 
@@ -27,6 +26,9 @@ def get_interpreter() -> IPythonInterpreter:
 
 @app.websocket("/api/interpreter/run")
 async def run(websocket: WebSocket):
+    if not verify_origin(websocket.headers["origin"]):
+        return
+
     ws_exceptions = WebSocketDisconnect, ConnectionClosedError
 
     try:

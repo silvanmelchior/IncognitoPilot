@@ -6,8 +6,7 @@ from pydantic import BaseModel
 from websockets.exceptions import ConnectionClosedError
 
 from llm import LLMException, Message, get_llm
-from utils import get_app, get_env_var
-
+from utils import get_app, get_env_var, verify_origin
 
 app = get_app()
 
@@ -21,6 +20,9 @@ class Request(BaseModel):
 
 @app.websocket("/api/llm/chat")
 async def chat(websocket: WebSocket):
+    if not verify_origin(websocket.headers["origin"]):
+        return
+
     ws_exceptions = WebSocketDisconnect, ConnectionClosedError
 
     try:
