@@ -29,7 +29,10 @@ class GPT(BaseLLM):
             response = {}
             previous_code = None
             for chunk_all in chunk_generator:
-                chunk = chunk_all["choices"][0]["delta"]
+                if len(chunk_all["choices"]) > 0:
+                    chunk = chunk_all["choices"][0]["delta"]
+                else:
+                    chunk = {}
                 fill_dict(response, chunk)
 
                 text = None
