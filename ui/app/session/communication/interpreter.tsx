@@ -3,7 +3,7 @@ export default class Interpreter {
   private readonly interpreterUrl: string;
 
   constructor() {
-    this.interpreterUrl = process.env.NEXT_PUBLIC_INTERPRETER_URL ?? "";
+    this.interpreterUrl = process.env.NEXT_PUBLIC_SERVICES_URL ?? "";
     if (this.interpreterUrl === "") {
       try {
         this.interpreterUrl = location.host;

@@ -4,11 +4,7 @@ version = "0.0.0"
 description = ""
 authors = ["Silvan Melchior"]
 license = "MIT"
-packages = [
-    {include = "interpreter"},
-    {include = "llm"},
-    {include = "utils"},
-]
+packages = [{include = "services"}]
 
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"

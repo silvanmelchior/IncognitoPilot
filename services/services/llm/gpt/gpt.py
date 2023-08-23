@@ -3,8 +3,8 @@ from typing import Generator
 import openai
 from openai import OpenAIError
 
-from llm.base import BaseLLM, LLMException
-from llm.types import Message, Response
+from services.llm.base import BaseLLM, LLMException
+from services.llm.types import Message, Response
 from .parsing import msg_to_gpt_msg, lazy_parse_args, fill_dict
 from .prompt import FUNCTIONS
 

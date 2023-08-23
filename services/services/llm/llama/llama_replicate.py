@@ -1,12 +1,11 @@
-from typing import Generator, Optional
+from typing import Generator
 
 import replicate
 from replicate.exceptions import ReplicateException
 
-from llm.base import BaseLLM, LLMException
-from llm.types import Message, Response
-from utils import get_env_var
-
+from services.llm.base import BaseLLM, LLMException
+from services.llm.types import Message, Response
+from services.utils import get_env_var
 from .prompt import SYSTEM_PROMPT
 from .parsing import msg_to_llama_msg, split_output
 

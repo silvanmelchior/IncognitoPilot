@@ -1,6 +1,6 @@
 from typing import Optional
 
-from llm.base import Message
+from services.llm.base import Message
 
 CODE_BEGIN, CODE_END = "```python\n", "\n```"
 CODE_RESULT = "RESULT_PYTHON: "

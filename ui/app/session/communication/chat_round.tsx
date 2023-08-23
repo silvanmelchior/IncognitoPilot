@@ -21,7 +21,7 @@ export class ChatRound {
     private readonly setState: (state: ChatRoundState) => void,
     private readonly setCodeResult: (result: string) => void,
   ) {
-    let llmUrl = process.env.NEXT_PUBLIC_LLM_URL ?? "";
+    let llmUrl = process.env.NEXT_PUBLIC_SERVICES_URL ?? "";
     if (llmUrl === "") {
       try {
         llmUrl = location.host;
