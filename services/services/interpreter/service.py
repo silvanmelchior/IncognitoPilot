@@ -5,7 +5,7 @@ from websockets.exceptions import ConnectionClosedError
 
 from services.interpreter import IPythonInterpreter
 from services.utils import get_env_var
-from services.auth import verify_origin
+from services.auth import verify_websocket
 
 
 WORKING_DIRECTORY = Path(get_env_var("WORKING_DIRECTORY"))
@@ -29,13 +29,12 @@ def get_interpreter() -> IPythonInterpreter:
 
 @interpreter_router.websocket("/run")
 async def run(websocket: WebSocket):
-    if not verify_origin(websocket.headers["origin"]):
-        return
-
     ws_exceptions = WebSocketDisconnect, ConnectionClosedError
 
+    await websocket.accept()
     try:
-        await websocket.accept()
+        if not await verify_websocket(websocket):
+            return
     except ws_exceptions:
         return
 

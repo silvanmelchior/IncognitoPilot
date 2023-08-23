@@ -1,8 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { createContext } from "react";
 import axios from "axios";
 import { SERVICES_URL } from "@/app/services";
+
+export const AuthContext = createContext<string | null>(null);
+
+export const AUTH_ERROR_MSG =
+  "Could not authenticate to backend. This probably means there is no or an invalid authentication token provided in the URL. Please check the startup console output of the backend and add a valid token to the URL.";
 
 export default function Authentication({
   children,
@@ -15,6 +20,7 @@ export default function Authentication({
     const urlParams = new URLSearchParams(window.location.hash.substring(1));
     let token = urlParams.get("token");
     if (token !== null) {
+      window.location.hash = "";
       localStorage.setItem("auth_token", token);
     } else {
       token = localStorage.getItem("auth_token");
@@ -26,14 +32,11 @@ export default function Authentication({
           token,
         })
         .then((response) => {
-          console.log("SUCCESS", token); // TODO: REMOVE
           setToken(token);
         })
-        .catch((error) => {
-          console.log("ERROR");
-        }); // will show error later (TODO: REMOVE CONSOLE LOGS)
+        .catch((error) => {}); // will show error later
     }
   }, []);
 
-  return children;
+  return <AuthContext.Provider value={token}>{children}</AuthContext.Provider>;
 }

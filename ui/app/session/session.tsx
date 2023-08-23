@@ -12,6 +12,7 @@ import {
 import { Header } from "@/app/session/chat/header";
 import Brand from "@/app/session/chat/brand";
 import useScroller from "@/app/helper/scroller";
+import { AUTH_ERROR_MSG, AuthContext } from "@/app/authentication";
 
 export default function Session({
   refreshSession,
@@ -36,6 +37,8 @@ export default function Session({
     interpreterRef.current = new Interpreter();
   }
 
+  const authToken = React.useContext(AuthContext);
+
   const code = history.findLast((msg) => msg.code !== undefined)?.code ?? null;
   React.useEffect(() => {
     if (code !== null) {
@@ -49,6 +52,10 @@ export default function Session({
   React.useEffect(focusChatInput, []);
 
   const startChatRound = (message: string) => {
+    if (authToken === null) {
+      setError(AUTH_ERROR_MSG);
+      return;
+    }
     const chatRound = new ChatRound(
       history,
       setHistory,
@@ -57,6 +64,7 @@ export default function Session({
       interpreterRef.current!,
       setChatRoundState,
       setCodeResult,
+      authToken,
     );
     chatRound
       .run(message)

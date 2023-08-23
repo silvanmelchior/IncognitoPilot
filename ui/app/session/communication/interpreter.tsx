@@ -10,9 +10,12 @@ export default class Interpreter {
       "/api/interpreter";
   }
 
-  private connect(): Promise<void> {
+  private connect(authToken: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.ws = new WebSocket(`ws://${this.interpreterUrl}/run`);
+      this.ws.onopen = () => {
+        this.ws!.send(authToken);
+      };
       this.ws!.onmessage = (event) => {
         if (event.data === "_ready_") {
           resolve();
@@ -45,9 +48,9 @@ export default class Interpreter {
     });
   }
 
-  async run(code: string): Promise<string> {
+  async run(code: string, authToken: string): Promise<string> {
     if (this.ws === null) {
-      await this.connect();
+      await this.connect(authToken);
     }
     return await this.send(code);
   }

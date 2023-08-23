@@ -21,10 +21,11 @@ export class ChatRound {
     private readonly interpreter: Interpreter,
     private readonly setState: (state: ChatRoundState) => void,
     private readonly setCodeResult: (result: string) => void,
+    private readonly authToken: string,
   ) {
     const llmUrl =
       SERVICES_URL.replace("http://", "").replace("https://", "") + "/api/llm";
-    this.llm = new LLM(llmUrl);
+    this.llm = new LLM(llmUrl, authToken);
   }
 
   private extendHistory(message: Message) {
@@ -83,7 +84,7 @@ export class ChatRound {
 
   private executeCode = async (code: string): Promise<string> => {
     this.setState("waiting for interpreter");
-    return await this.interpreter.run(code);
+    return await this.interpreter.run(code, this.authToken);
   };
 
   private approveOut = async (result: string) => {

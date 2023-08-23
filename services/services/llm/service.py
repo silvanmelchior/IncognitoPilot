@@ -5,9 +5,10 @@ from fastapi.websockets import WebSocketDisconnect
 from pydantic import BaseModel
 from websockets.exceptions import ConnectionClosedError
 
+from services.auth import verify_websocket
 from services.llm import LLMException, Message, get_llm
 from services.utils import get_env_var
-from services.auth import verify_origin
+from services.auth import AUTH_TOKEN
 
 
 LLM_SETTING = get_env_var("LLM", "gpt-openai:gpt-4")
@@ -23,13 +24,16 @@ class Request(BaseModel):
 
 @llm_router.websocket("/chat")
 async def chat(websocket: WebSocket):
-    if not verify_origin(websocket.headers["origin"]):
-        return
-
     ws_exceptions = WebSocketDisconnect, ConnectionClosedError
 
+    await websocket.accept()
     try:
-        await websocket.accept()
+        if not await verify_websocket(websocket):
+            return
+    except ws_exceptions:
+        return
+
+    try:
         history = await websocket.receive_text()
     except ws_exceptions:
         return

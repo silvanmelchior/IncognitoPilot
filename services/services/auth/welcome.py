@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from .origin import ALLOWED_HOSTS
+from .websocket import ALLOWED_HOSTS
 from .token import AUTH_TOKEN
 
 
