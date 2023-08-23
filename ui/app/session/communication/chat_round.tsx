@@ -2,6 +2,7 @@ import { Message } from "@/app/session/communication/message";
 import Interpreter from "@/app/session/communication/interpreter";
 import LLM from "@/app/session/communication/llm";
 import { Approver } from "@/app/session/approval/approver";
+import { SERVICES_URL } from "@/app/services";
 
 export type ChatRoundState =
   | "not active"
@@ -21,15 +22,8 @@ export class ChatRound {
     private readonly setState: (state: ChatRoundState) => void,
     private readonly setCodeResult: (result: string) => void,
   ) {
-    let llmUrl = process.env.NEXT_PUBLIC_SERVICES_URL ?? "";
-    if (llmUrl === "") {
-      try {
-        llmUrl = location.host;
-      } catch (e) {
-        llmUrl = "localhost";
-      }
-    }
-    llmUrl += "/api/llm";
+    const llmUrl =
+      SERVICES_URL.replace("http://", "").replace("https://", "") + "/api/llm";
     this.llm = new LLM(llmUrl);
   }
 

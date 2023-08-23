@@ -1,4 +1,4 @@
-from .env_var import get_env_var
+from services.utils.env_var import get_env_var
 
 ALLOWED_HOSTS = get_env_var("ALLOWED_HOSTS").split(" ")
 

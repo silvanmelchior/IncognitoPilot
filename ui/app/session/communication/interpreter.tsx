@@ -1,17 +1,13 @@
+import { SERVICES_URL } from "@/app/services";
+
 export default class Interpreter {
   private ws: WebSocket | null = null;
   private readonly interpreterUrl: string;
 
   constructor() {
-    this.interpreterUrl = process.env.NEXT_PUBLIC_SERVICES_URL ?? "";
-    if (this.interpreterUrl === "") {
-      try {
-        this.interpreterUrl = location.host;
-      } catch (e) {
-        this.interpreterUrl = "localhost";
-      }
-    }
-    this.interpreterUrl += "/api/interpreter";
+    this.interpreterUrl =
+      SERVICES_URL.replace("http://", "").replace("https://", "") +
+      "/api/interpreter";
   }
 
   private connect(): Promise<void> {

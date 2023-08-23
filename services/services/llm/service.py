@@ -6,12 +6,15 @@ from pydantic import BaseModel
 from websockets.exceptions import ConnectionClosedError
 
 from services.llm import LLMException, Message, get_llm
-from services.utils import get_env_var, verify_origin
+from services.utils import get_env_var
+from services.auth import verify_origin
 
-llm_router = APIRouter()
 
 LLM_SETTING = get_env_var("LLM", "gpt-openai:gpt-4")
 llm = get_llm(LLM_SETTING)
+
+
+llm_router = APIRouter()
 
 
 class Request(BaseModel):
