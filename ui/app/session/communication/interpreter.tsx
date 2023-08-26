@@ -6,13 +6,13 @@ export default class Interpreter {
 
   constructor() {
     this.interpreterUrl =
-      SERVICES_URL.replace("http://", "").replace("https://", "") +
+      SERVICES_URL.replace("https://", "wss://").replace("http://", "ws://") +
       "/api/interpreter";
   }
 
   private connect(authToken: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.ws = new WebSocket(`ws://${this.interpreterUrl}/run`);
+      this.ws = new WebSocket(`${this.interpreterUrl}/run`);
       this.ws.onopen = () => {
         this.ws!.send(authToken);
       };

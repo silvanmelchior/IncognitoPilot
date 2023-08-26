@@ -2,10 +2,10 @@ function getServicesUrl() {
   let url = process.env.NEXT_PUBLIC_SERVICES_URL ?? "";
   if (url === "") {
     try {
-      url = location.host;
+      url = location.origin;
     } catch (e) {
       // during page build, location is not available
-      url = "localhost";
+      url = "http://localhost";
     }
   }
   return url;

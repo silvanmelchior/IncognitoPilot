@@ -8,7 +8,7 @@ export default class LLM {
 
   private connect(): Promise<WebSocket> {
     return new Promise((resolve, reject) => {
-      const ws = new WebSocket(`ws://${this.llmUrl}/chat`);
+      const ws = new WebSocket(`${this.llmUrl}/chat`);
       ws.onopen = () => {
         ws.send(this.authToken);
         resolve(ws);

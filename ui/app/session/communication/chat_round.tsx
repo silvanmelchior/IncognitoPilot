@@ -24,7 +24,8 @@ export class ChatRound {
     private readonly authToken: string,
   ) {
     const llmUrl =
-      SERVICES_URL.replace("http://", "").replace("https://", "") + "/api/llm";
+      SERVICES_URL.replace("https://", "wss://").replace("http://", "ws://") +
+      "/api/llm";
     this.llm = new LLM(llmUrl, authToken);
   }
 
