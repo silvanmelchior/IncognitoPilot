@@ -1,6 +1,5 @@
 #!/bin/bash
 
-/opt/app/start_interpreter.sh &
-/opt/app/start_llm.sh &
+/opt/app/start_services.sh &
 
 nginx -g "daemon off;"

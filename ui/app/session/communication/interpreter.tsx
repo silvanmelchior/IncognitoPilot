@@ -1,22 +1,21 @@
+import { SERVICES_URL } from "@/app/services";
+
 export default class Interpreter {
   private ws: WebSocket | null = null;
   private readonly interpreterUrl: string;
 
   constructor() {
-    this.interpreterUrl = process.env.NEXT_PUBLIC_INTERPRETER_URL ?? "";
-    if (this.interpreterUrl === "") {
-      try {
-        this.interpreterUrl = location.host;
-      } catch (e) {
-        this.interpreterUrl = "localhost";
-      }
-    }
-    this.interpreterUrl += "/api/interpreter";
+    this.interpreterUrl =
+      SERVICES_URL.replace("https://", "wss://").replace("http://", "ws://") +
+      "/api/interpreter";
   }
 
-  private connect(): Promise<void> {
+  private connect(authToken: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.ws = new WebSocket(`ws://${this.interpreterUrl}/run`);
+      this.ws = new WebSocket(`${this.interpreterUrl}/run`);
+      this.ws.onopen = () => {
+        this.ws!.send(authToken);
+      };
       this.ws!.onmessage = (event) => {
         if (event.data === "_ready_") {
           resolve();
@@ -49,9 +48,9 @@ export default class Interpreter {
     });
   }
 
-  async run(code: string): Promise<string> {
+  async run(code: string, authToken: string): Promise<string> {
     if (this.ws === null) {
-      await this.connect();
+      await this.connect(authToken);
     }
     return await this.send(code);
   }

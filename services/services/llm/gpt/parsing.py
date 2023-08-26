@@ -1,7 +1,7 @@
 import re
 import json
 
-from llm.types import Message
+from services.llm.types import Message
 
 
 def msg_to_gpt_msg(msg: Message) -> dict:

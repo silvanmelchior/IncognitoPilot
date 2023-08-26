@@ -1,6 +1,6 @@
 import openai
 
-from utils import get_env_var
+from services.utils import get_env_var
 from .gpt import GPT
 
 

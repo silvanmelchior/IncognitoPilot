@@ -2,6 +2,7 @@ import { Message } from "@/app/session/communication/message";
 import Interpreter from "@/app/session/communication/interpreter";
 import LLM from "@/app/session/communication/llm";
 import { Approver } from "@/app/session/approval/approver";
+import { SERVICES_URL } from "@/app/services";
 
 export type ChatRoundState =
   | "not active"
@@ -20,17 +21,12 @@ export class ChatRound {
     private readonly interpreter: Interpreter,
     private readonly setState: (state: ChatRoundState) => void,
     private readonly setCodeResult: (result: string) => void,
+    private readonly authToken: string,
   ) {
-    let llmUrl = process.env.NEXT_PUBLIC_LLM_URL ?? "";
-    if (llmUrl === "") {
-      try {
-        llmUrl = location.host;
-      } catch (e) {
-        llmUrl = "localhost";
-      }
-    }
-    llmUrl += "/api/llm";
-    this.llm = new LLM(llmUrl);
+    const llmUrl =
+      SERVICES_URL.replace("https://", "wss://").replace("http://", "ws://") +
+      "/api/llm";
+    this.llm = new LLM(llmUrl, authToken);
   }
 
   private extendHistory(message: Message) {
@@ -89,7 +85,7 @@ export class ChatRound {
 
   private executeCode = async (code: string): Promise<string> => {
     this.setState("waiting for interpreter");
-    return await this.interpreter.run(code);
+    return await this.interpreter.run(code, this.authToken);
   };
 
   private approveOut = async (result: string) => {

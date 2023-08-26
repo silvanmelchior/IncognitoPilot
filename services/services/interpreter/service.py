@@ -1,17 +1,20 @@
 from pathlib import Path
 
-from fastapi import WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosedError
 
-from interpreter import IPythonInterpreter
-from utils import get_app, get_env_var, verify_origin
+from services.interpreter import IPythonInterpreter
+from services.utils import get_env_var
+from services.auth import verify_websocket
 
-app = get_app()
 
 WORKING_DIRECTORY = Path(get_env_var("WORKING_DIRECTORY"))
 IPYTHON_PATH = Path(get_env_var("IPYTHON_PATH"))
 TIMEOUT = int(get_env_var("INTERPRETER_TIMEOUT", "30"))
 TIMEOUT_MESSAGE = "ERROR: TIMEOUT REACHED"
+
+
+interpreter_router = APIRouter()
 
 
 def get_interpreter() -> IPythonInterpreter:
@@ -24,15 +27,14 @@ def get_interpreter() -> IPythonInterpreter:
     return interpreter
 
 
-@app.websocket("/api/interpreter/run")
+@interpreter_router.websocket("/run")
 async def run(websocket: WebSocket):
-    if not verify_origin(websocket.headers["origin"]):
-        return
-
     ws_exceptions = WebSocketDisconnect, ConnectionClosedError
 
+    await websocket.accept()
     try:
-        await websocket.accept()
+        if not await verify_websocket(websocket):
+            return
     except ws_exceptions:
         return
 

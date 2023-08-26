@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from interpreter import IPythonInterpreter
+from services.interpreter import IPythonInterpreter
 
 
 def test_print():
