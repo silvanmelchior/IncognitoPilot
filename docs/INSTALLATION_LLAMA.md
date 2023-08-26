@@ -38,7 +38,9 @@ docker run -i -t \
 
 You can of course also choose a [different model](https://replicate.com/blog/all-the-llamas), but the smaller ones are much less suited for this task.
 
-Now visit http://localhost:3030 and should see the **Incognito Pilot** interface.
+In the console, you should now see a URL.
+Open it, and you should see the **Incognito Pilot** interface.
+
 Before you continue, remember:
 - Everything you type or every code result you approve is sent to the Replicate API
 - Your data stays and is processed locally
@@ -99,7 +101,9 @@ docker run -i -t \
   silvanmelchior/incognito-pilot:latest-slim
 ```
 
-Visit http://localhost:3030 and should see the **Incognito Pilot** interface.
+In the console, you should now see a URL.
+Open it, and you should see the **Incognito Pilot** interface.
+
 Congrats! You have a fully local setup, everything is running on your own system :partying_face:.
 
 ## :rocket: Getting started (Llama 2)

@@ -56,7 +56,8 @@ docker run -i -t \
   silvanmelchior/incognito-pilot:latest-slim
 ```
 
-You can now visit http://localhost:3030 and should see the **Incognito Pilot** interface.
+In the console, you should now see a URL.
+Open it, and you should see the **Incognito Pilot** interface.
 
 It's also possible to run **Incognito Pilot** with the free trial credits of OpenAI, without adding a credit card.
 At the moment, this does not include GPT-4 however, so see below how to change the model to GPT-3.5.
@@ -113,6 +114,19 @@ docker run -i -t \
   silvanmelchior/incognito-pilot
 ```
 
+### Authentication
+
+Per default, the authentication token, which is part of the URL you open, is randomly generated at startup.
+This means, whenever you restart the container, you need to re-copy the URL.
+If you want to prevent this, you can also fix the token to a certain value, by adding the following to the docker run command:
+
+```shell
+  -e AUTH_TOKEN="some-secret-token" 
+```
+
+Once you opened the URL with the new token, the browser will remember it.
+Thus, from now on, you can access **Incognito Pilot** by just opening http://localhost:3030, without having to add a token to the URL.
+
 ### Timeout
 
 Per default, the Python interpreter stops after 30 seconds.
@@ -132,6 +146,7 @@ To automatically start **Incognito Pilot** with docker / at startup, remove the 
 ```
 
 Together with a bookmark of the UI URL, you'll have **Incognito Pilot** at your fingertips whenever you need it.
+Alternatively, you can use docker-compose.
 
 ## :toolbox: Own dependencies
 

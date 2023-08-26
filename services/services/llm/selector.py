@@ -1,6 +1,6 @@
-from llm.llama import LlamaReplicate, LlamaTGI
-from llm.gpt import GPTAzure, GPTOpenAI
-from llm.base import BaseLLM
+from services.llm.llama import LlamaReplicate, LlamaTGI
+from services.llm.gpt import GPTAzure, GPTOpenAI
+from services.llm.base import BaseLLM
 
 
 MAP_LLM = {

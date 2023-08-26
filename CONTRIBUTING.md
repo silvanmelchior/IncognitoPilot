@@ -41,19 +41,14 @@ Now open a terminal in the *services* folder and run the following:
 ```shell
 poetry install
 poetry shell
-export IPYTHON_PATH=/home/user/venv_interpreter/bin/ipython
-export WORKING_DIRECTORY=/home/user/ipilot
+
+export IPYTHON_PATH="/home/user/venv_interpreter/bin/ipython"
+export WORKING_DIRECTORY="/home/user/ipilot"
 export ALLOWED_HOSTS="localhost:3000"
-uvicorn main_interpreter:app --reload --port 8000
-```
-
-Open a second terminal in the *services* folder and run the following:
-
-```shell
-poetry shell
+export ENABLE_CORS="TRUE"
 export OPENAI_API_KEY=sk-your-api-key
-export ALLOWED_HOSTS="localhost:3000"
-uvicorn main_llm:app --reload --port 8001
+
+uvicorn main:app --reload
 ```
 
 If you want to use something else than OpenAI, adjust the env-variables as explained in the [Readme](/README.md).
@@ -64,8 +59,7 @@ Open a terminal in the *ui* folder and run the following:
 
 ```shell
 npm install
-export NEXT_PUBLIC_INTERPRETER_URL=localhost:8000
-export NEXT_PUBLIC_LLM_URL=localhost:8001
+export NEXT_PUBLIC_SERVICES_URL="http://localhost:8000"
 npm run dev
 ```
 

@@ -1,12 +1,16 @@
 import { Message } from "@/app/session/communication/message";
 
 export default class LLM {
-  constructor(private readonly llmUrl: string) {}
+  constructor(
+    private readonly llmUrl: string,
+    private readonly authToken: string,
+  ) {}
 
   private connect(): Promise<WebSocket> {
     return new Promise((resolve, reject) => {
-      const ws = new WebSocket(`ws://${this.llmUrl}/chat`);
+      const ws = new WebSocket(`${this.llmUrl}/chat`);
       ws.onopen = () => {
+        ws.send(this.authToken);
         resolve(ws);
       };
       ws.onerror = () => {

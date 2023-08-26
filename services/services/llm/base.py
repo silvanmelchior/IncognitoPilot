@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Generator
 
-from llm.types import Message, Response
+from services.llm.types import Message, Response
 
 
 class BaseLLM(ABC):

@@ -11,7 +11,7 @@ Follow these steps:
 3. Login to Azure portal and create an [Azure OpenAI Service](https://azure.microsoft.com/en-us/products/ai-services/openai-service-b).
 4. You will see the access key and endpoint, which we will use later.
 5. Open Azure OpenAI Studio and deploy a model.
-6Now, just run the following command (replace your working directory, model-name and API information):
+6. Now, just run the following command (replace your working directory, model-name and API information):
 
 ```shell
 docker run -i -t \
@@ -24,7 +24,8 @@ docker run -i -t \
   silvanmelchior/incognito-pilot:latest-slim
 ```
 
-You can now visit http://localhost:3030 and should see the **Incognito Pilot** interface.
+In the console, you should now see a URL.
+Open it, and you should see the **Incognito Pilot** interface.
 
 Make sure you have access to a model which is capable of function calling, otherwise you will get an error similar to "unknown argument 'function'".
 
