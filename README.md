@@ -94,7 +94,7 @@ To use another model than the default one (GPT-4), set the environment variable 
 OpenAI's GPT models have the prefix `gpt:`, so to use GPT-3.5 for example (the original ChatGPT), add the following to the docker run command:
 
 ```shell
--e LLM="gpt:gpt-3.5-turbo"
+-e LLM="gpt-openai:gpt-3.5-turbo"
 ```
 
 Please note that GPT-4 is considerably better in the interpreter setup than GPT-3.5.
