@@ -2,10 +2,10 @@
     <img src="https://github.com/silvanmelchior/IncognitoPilot/blob/main/docs/title.png" alt="logo" style="width: 75%">
 </p>
 
-<p align="center"><em>An AI code interpreter for sensitive data, powered by GPT-4 or Llama 2.</em></p>
+<p align="center"><em>An AI code interpreter for sensitive data, powered by GPT-4 or Code Llama / Llama 2.</em></p>
 
 **Incognito Pilot** combines a Large Language Model (LLM) with a Python interpreter, so it can run code and execute tasks for you.
-It is similar to **ChatGPT Code Interpreter**, but the interpreter runs **locally** and it can use open-source models like **Llama 2**.
+It is similar to **ChatGPT Code Interpreter**, but the interpreter runs **locally** and it can use open-source models like **Code Llama / Llama 2**.
 
 **Incognito Pilot** allows you to work with **sensitive data** without uploading it to the cloud.
 Either you use a local LLM (like Llama 2), or an API (like GPT-4).
@@ -25,13 +25,13 @@ https://github.com/silvanmelchior/IncognitoPilot/assets/6033305/05b0a874-6f76-4d
 The video shows Incognito Pilot with GPT-4.
 While your conversation and approved code results are sent to OpenAI's API, your **data is kept locally** on your machine.
 The interpreter is running locally as well and processes your data right there.
-And you can go even further and use Llama 2 to have everything running on your machine.
+And you can go even further and use Code Llama / Llama 2 to have everything running on your machine.
 
 ## :package: Installation (GPT via OpenAI API)
 
 This section shows how to install **Incognito Pilot** using a GPT model via OpenAI's API. For
 
-- **Llama 2**, check [Installation for Llama 2](/docs/INSTALLATION_LLAMA.md) instead, and for
+- **Code Llama / Llama 2**, check [Installation for Llama 2](/docs/INSTALLATION_LLAMA.md) instead, and for
 - **GPT on Azure**, check [Installation with Azure](/docs/INSTALLATION_AZURE.md) instead.
 - If you don't have docker, you can install **Incognito Pilot** on your system directly, using the development setup (see below).
 
