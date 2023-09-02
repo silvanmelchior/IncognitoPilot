@@ -1,11 +1,12 @@
-# :package: Installation (Llama 2)
+# :package: Installation (Code Llama / Llama 2)
 
-This section shows how to install **Incognito Pilot** using Llama 2.
+This section shows how to install **Incognito Pilot** using the Llama models.
 Please note that you will only get satisfactory results with the largest model *llama-2-70b-chat*, which needs considerable hardware resources.
-And even then, the experience will not be comparable to GPT-4, since Llama 2 was not fine-tuned for this task.
+And even then, the experience will not be comparable to GPT-4, since the Llama models are not fine-tuned to interact with tools like a code interpreter.
+You can also try smaller models specialized for coding, like *codellama-34b-instruct*, but the coding capabilities of Llama 2 are not really the bottleneck and thus the largest model usually gives better results.
 
 Nevertheless, it's a lot of fun to see what's already possible with open-source models.
-At the moment, there are two ways of using **Incognito Pilot** with Llama 2:
+At the moment, there are two ways of using **Incognito Pilot** with the Llama models:
 
 - Using a cloud API from [replicate](https://replicate.com/).
   While you don't have the advantage of a fully local setup here, you can try out the 70B model in a quick way without owning powerful hardware.
@@ -29,14 +30,14 @@ Follow these steps:
 ```shell
 docker run -i -t \
   -p 3030:80 \
-  -e LLM="llama-replicate:replicate/llama-2-70b-chat:2c1608e18606fad2812020dc541930f2d0495ce32eee50074220b87300bc16e1" \
+  -e LLM="llama-replicate:replicate/llama-2-70b-chat:2796ee9483c3fd7aa2e171d38f4ca12251a30609463dcfd4cd76703f22e96cdf" \
   -e REPLICATE_API_KEY="your-replicate-api-key" \
   -e ALLOWED_HOSTS="localhost:3030" \
   -v /home/user/ipilot:/mnt/data \
   silvanmelchior/incognito-pilot:latest-slim
 ```
 
-You can of course also choose a [different model](https://replicate.com/blog/all-the-llamas), but the smaller ones are much less suited for this task.
+You can of course also choose a [different model](https://replicate.com/explore?query=codellama), but the smaller ones are much less suited for this task.
 
 In the console, you should now see a URL.
 Open it, and you should see the **Incognito Pilot** interface.
@@ -106,7 +107,7 @@ Open it, and you should see the **Incognito Pilot** interface.
 
 Congrats! You have a fully local setup, everything is running on your own system :partying_face:.
 
-## :rocket: Getting started (Llama 2)
+## :rocket: Getting started (Code Llama / Llama 2)
 
 In the **Incognito Pilot** interface, you will see a chat interface, with which you can interact with the model.
 Let's try it out!
